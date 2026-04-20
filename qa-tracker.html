@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Test Case Tracker</title>
+<style>
+:root{
+  --bg:#fff;--bg2:#f6f6f4;--bg3:#eeede9;
+  --bg-info:#e6f1fb;--bg-danger:#fcebeb;--bg-warn:#faeeda;--bg-success:#eaf3de;
+  --text:#1c1c1a;--text2:#6b6b67;--text3:#a0a09c;
+  --c-info:#0c447c;--c-danger:#a32d2d;--c-warn:#633806;--c-success:#3b6d11;--c-blue:#185fa5;
+  --bd:rgba(0,0,0,.11);--bd2:rgba(0,0,0,.19);--r:8px;--rl:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh}
+.topbar{background:var(--bg);border-bottom:1px solid var(--bd);padding:0 1.5rem;display:flex;align-items:center;gap:10px;height:50px;position:sticky;top:0;z-index:200}
+.tb-title{font-size:14px;font-weight:600}.tb-sub{font-size:11px;color:var(--text3)}.tb-space{flex:1}
+.sync-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);white-space:nowrap}
+.sync-pill.ok{color:var(--c-success);border-color:#97c459;background:var(--bg-success)}
+.sync-pill.syncing{color:var(--c-warn);border-color:#ef9f27;background:var(--bg-warn)}
+.sync-pill.err{color:var(--c-danger);border-color:#f09595;background:var(--bg-danger)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+input,select{font-family:inherit;font-size:12px;color:var(--text);background:var(--bg);border:1px solid var(--bd2);border-radius:var(--r);padding:6px 10px;width:100%;outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus{border-color:#378add;box-shadow:0 0 0 3px rgba(55,138,221,.18)}
+input[readonly]{background:var(--bg2);color:var(--text2);cursor:default}
+input[type=date]{cursor:pointer}
+input[type=checkbox]{width:15px;height:15px;accent-color:var(--c-blue);cursor:pointer;flex-shrink:0}
+input[type=file]{display:none}
+button{font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;border-radius:var(--r);padding:6px 14px;border:1px solid var(--bd2);background:var(--bg);color:var(--text);white-space:nowrap;transition:background .12s,border-color .12s;user-select:none}
+button:hover{background:var(--bg2);border-color:rgba(0,0,0,.28)}
+button:active{transform:scale(.97)}
+.bp{background:var(--c-blue);color:#fff;border-color:var(--c-blue)}.bp:hover{background:#0c447c;border-color:#0c447c;color:#fff}
+.bd-btn{background:transparent;color:var(--c-danger);border-color:#f09595}.bd-btn:hover{background:var(--bg-danger);border-color:#e24b4a}
+.act-group{display:inline-flex;gap:4px;align-items:center}
+.act{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;cursor:pointer;border:1px solid;white-space:nowrap;user-select:none;transition:background .1s}
+.act:active{transform:scale(.95)}
+.act-r{color:var(--c-warn);background:var(--bg-warn);border-color:#ef9f27}.act-r:hover{background:#fac775}
+.act-e{color:var(--c-info);background:var(--bg-info);border-color:#85b7eb}.act-e:hover{background:#b5d4f4}
+.act-d{color:var(--c-danger);background:var(--bg-danger);border-color:#f09595}.act-d:hover{background:#f7c1c1}
+.lbl{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;letter-spacing:.01em}
+.lbl.click{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}.lbl.click:hover{color:var(--c-blue)}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl)}
+.panel{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 16px}
+.wrap{width:100%;padding:1.25rem 1.5rem}
+.metrics{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.1rem}
+.metric{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:10px 14px;text-align:center;flex:1;min-width:72px;position:relative;transition:border-color .2s}
+.metric.filtered{border-color:#378add;background:var(--bg-info)}
+.ml{font-size:10px;color:var(--text2);margin-bottom:3px;white-space:nowrap;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.mv{font-size:20px;font-weight:600}.mv-sub{font-size:10px;color:var(--text3);margin-top:1px;white-space:nowrap}
+.prog{height:4px;border-radius:2px;background:var(--bg3);overflow:hidden;margin-top:6px}
+.pf{height:100%;border-radius:2px;background:var(--c-success);transition:width .35s}
+.filter-dot{display:none;width:6px;height:6px;border-radius:50%;background:#378add;position:absolute;top:7px;right:7px}
+.metric.filtered .filter-dot{display:block}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.pass{background:var(--bg-success);color:var(--c-success);border-color:#c0dd97}
+.fail{background:var(--bg-danger);color:var(--c-danger);border-color:#f09595}
+.intest{background:#eeedfe;color:#3c3489;border-color:#afa9ec}
+.pos{background:var(--bg-info);color:var(--c-info);border-color:#85b7eb}
+.neg{background:var(--bg-warn);color:var(--c-warn);border-color:#fac775}
+.bhi{background:#fcebeb;color:#a32d2d;border-color:#f09595}
+.bmed{background:var(--bg2);color:var(--text2);border-color:var(--bd2)}
+.blo{background:#e1f5ee;color:#085041;border-color:#5dcaa5}
+.bstag{background:#faeeda;color:#633806;border-color:#fac775}
+.bprod{background:#eeedfe;color:#3c3489;border-color:#afa9ec}
+.form-wrap{padding:1.1rem 1.25rem;margin-bottom:1.1rem}
+.form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.form-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text2)}
+.form-acts{display:flex;gap:6px}
+/* Row 1: Test ID(140px) · Name(1fr) · Scenario(1fr) · Module(1fr) · Priority(95px) · Type(95px) · Env(120px) */
+.g-form1{display:grid;grid-template-columns:140px 1fr 1fr 1fr 95px 95px 120px;gap:10px;margin-bottom:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.gbot{display:grid;grid-template-columns:1fr 95px 105px 90px 170px;gap:10px;align-items:end}
+.divider{height:1px;background:var(--bd);margin:12px -1.25rem 12px}
+.img-row{display:none;align-items:center;gap:10px;margin-top:9px;padding:8px 10px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--bd)}
+.upzone{border:1.5px dashed var(--bd2);border-radius:var(--r);padding:9px 10px;text-align:center;cursor:pointer;color:var(--text2);font-size:11px;background:var(--bg2);position:relative;transition:border-color .15s}
+.upzone:hover{border-color:var(--c-blue);color:var(--c-blue)}
+.upzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;display:block}
+.banner{border-radius:var(--r);padding:7px 12px;font-size:12px;display:none;align-items:center;gap:8px;margin-bottom:10px;border:1px solid}
+.banner.on{display:flex}
+.bwarn{background:var(--bg-warn);border-color:#ef9f27;color:var(--c-warn)}
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;overflow-y:visible}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;border-bottom:1px solid var(--bd);text-align:left;background:var(--bg2);white-space:nowrap;position:relative;overflow:hidden;user-select:none}
+/* NOTE: To change the Name column width, find .name-cell and adjust the 'width' in the colgroup th[data-col="name"] */
+td{padding:7px 10px;border-bottom:1px solid rgba(0,0,0,.05);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:0;vertical-align:middle}
+td.act-cell{white-space:nowrap;overflow:visible;max-width:none}
+td.dt-cell{white-space:normal;line-height:1.4;max-width:none;min-width:100px}
+td.badge-cell{overflow:visible;max-width:none}
+/* NAME CELL: width set in buildHead th[data-col="name"]. Single-line truncation, full text on hover. */
+td.name-cell{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:0;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+.hl td{background:#e8f2fd!important}
+tr.selected td{background:#f0f7ff!important}
+/* Resize handle on columns */
+.resize-handle{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:10}
+.resize-handle:hover,.resize-handle:active{background:rgba(55,138,221,.35)}
+/* Reorder mode */
+tr.dragging{opacity:.4}
+tr.drag-over-top td{border-top:2px solid var(--c-blue)!important}
+tr.drag-over-bot td{border-bottom:2px solid var(--c-blue)!important}
+.drag-handle{cursor:grab;font-size:16px;color:var(--text3);padding:0 4px;display:inline-block}
+.drag-handle:active{cursor:grabbing}
+/* Filter bar */
+.filter-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.filter-info{font-size:11px;color:var(--c-blue);font-weight:500;margin-top:8px;display:none;padding:5px 8px;background:var(--bg-info);border-radius:6px;border:1px solid #85b7eb}
+.srch-wrap{position:relative;display:flex;align-items:center;min-width:190px;flex:2}
+.srch-wrap input{padding-right:34px}
+.srch-btn{position:absolute;right:5px;font-size:10px;padding:2px 7px;border:1px solid var(--bd2);background:var(--bg);color:var(--text2);border-radius:5px}
+.srch-btn:hover{background:var(--bg2)}
+/* Bulk bar */
+.bulk-bar{display:none;align-items:center;gap:8px;padding:8px 12px;background:#e8f2fd;border:1px solid #85b7eb;border-radius:var(--r);margin-bottom:8px;flex-wrap:wrap}
+.bulk-bar.on{display:flex}
+.bulk-count{font-size:12px;font-weight:600;color:var(--c-info)}
+/* Modals — fixed overlay so they appear without page scrolling */
+.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto}
+.modal-bg.on{display:flex}
+.modal{background:var(--bg);border-radius:var(--rl);border:1px solid var(--bd);padding:1.5rem;width:100%;max-width:560px}
+.modal.wide{max-width:780px}
+.m-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.m-sub{font-size:12px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6}
+.m-field{margin-bottom:12px}
+.m-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--bd)}
+.step-row{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--c-blue);color:#fff;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+code{font-size:11px;background:var(--bg2);border:1px solid var(--bd);border-radius:4px;padding:1px 5px}
+.share-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;margin-top:12px;display:none}
+.share-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}.share-row:last-child{margin-bottom:0}
+.share-val{flex:1;font-family:monospace;font-size:11px;background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-err{font-size:12px;color:var(--c-danger);margin-top:6px;display:none}
+/* Bulk edit field rows */
+.be-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--bd);margin-bottom:8px}
+.be-lbl{font-size:12px;font-weight:600;width:100px;flex-shrink:0;cursor:pointer}
+.be-val{flex:1;display:none}.be-val.on{display:block}
+/* Detail panel */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem 1.5rem}
+.detail-field{display:flex;flex-direction:column;gap:3px}
+.detail-lbl{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.detail-val{font-size:13px;color:var(--text);line-height:1.5;word-break:break-word}
+.detail-val.mono{font-family:monospace;font-size:12px;color:var(--c-blue);font-weight:600}
+.detail-full{grid-column:1/-1}
+.detail-sep{grid-column:1/-1;height:1px;background:var(--bd);margin:4px 0}
+/* Image preview with zoom */
+.pp{background:rgba(0,0,0,.85);display:none;flex-direction:column;position:fixed;inset:0;z-index:1000;padding:0}
+.pp.on{display:flex}
+.pp-toolbar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(0,0,0,.6);flex-shrink:0}
+.pp-toolbar button{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3);font-size:13px;padding:5px 12px}
+.pp-toolbar button:hover{background:rgba(255,255,255,.25)}
+.pp-meta-txt{font-size:12px;color:rgba(255,255,255,.7);flex:1}
+.pp-zoom-info{font-size:12px;color:rgba(255,255,255,.8);min-width:50px;text-align:center}
+.pp-canvas{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;cursor:grab;padding:20px;min-height:0}
+.pp-canvas:active{cursor:grabbing}
+.pp-canvas img{display:block;transform-origin:center center;transition:transform .15s;max-width:none;user-select:none}
+/* Screenshot thumbnail */
+.thumb{width:44px;height:30px;object-fit:cover;border-radius:5px;border:1px solid var(--bd2);cursor:pointer;display:block;transition:opacity .15s,transform .15s}
+.thumb:hover{opacity:.8;transform:scale(1.06)}
+.tz{font-size:9px;background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:1px 4px;color:var(--text3);vertical-align:middle;margin-left:3px}
+/* Reorder panel */
+.reorder-panel{background:var(--bg);border:2px solid var(--c-blue);border-radius:var(--rl);margin-bottom:10px;display:none}
+.reorder-panel.on{display:block}
+.reorder-header{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bd);background:var(--bg-info)}
+.reorder-info{font-size:12px;color:var(--c-info)}
+/* ── Login overlay ── */
+.login-screen{position:fixed;inset:0;z-index:9999;background:var(--bg3);display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center}
+.login-logo{font-size:18px;font-weight:700;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--text2);margin-bottom:1.5rem}
+.login-field{margin-bottom:12px;text-align:left}
+.login-err{font-size:12px;color:var(--c-danger);background:var(--bg-danger);border:1px solid #f09595;border-radius:var(--r);padding:7px 10px;margin-bottom:10px;display:none}
+/* Role-based hiding: admin-only elements hidden for view role */
+body.role-view [data-admin-only]{display:none!important}
+/* Viewer restrictions */
+body.role-view #cdn-pill{display:none!important}
+body.role-view #reorder-btn{display:none!important}
+/* View mode chooser dialog (shown after viewer login) */
+.view-chooser{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center}
+.view-chooser.on{display:flex}
+.vc-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);padding:2rem;width:100%;max-width:400px}
+.vc-title{font-size:15px;font-weight:600;margin-bottom:6px}
+.vc-sub{font-size:12px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6}
+.vc-opt{width:100%;padding:12px 14px;font-size:13px;margin-bottom:8px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg2);cursor:pointer;text-align:left;font-family:inherit;font-weight:500;transition:background .12s;display:block}
+.vc-opt:hover{background:var(--bg3)}
+.vc-opt.hl{background:var(--bg-info);color:var(--c-info);border-color:#85b7eb}
+.vc-opt.hl:hover{background:#b5d4f4}
+/* Cloudinary badge in topbar */
+.cdn-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);white-space:nowrap;cursor:pointer}
+.cdn-pill.on{color:var(--c-success);border-color:#97c459;background:var(--bg-success)}
+.cdn-pill.off{color:var(--c-warn);border-color:#ef9f27;background:var(--bg-warn)}
+/* User pill */
+.user-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg2)}
+.user-pill .role-tag{font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:var(--c-blue);color:#fff}
+.user-pill .role-tag.view{background:#854F0B}
+.goto-btn{position:fixed;right:1.25rem;width:36px;height:36px;border-radius:50%;background:var(--c-blue);color:#fff;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:400;opacity:.85;transition:opacity .15s,transform .15s;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.goto-btn:hover{opacity:1;transform:scale(1.08)}
+#goto-top{bottom:4.5rem}
+#goto-bot{bottom:1rem}
+/* Pagination */
+.pag-bar{display:flex;align-items:center;gap:6px;padding:8px 14px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.pag-info{font-size:11px;color:var(--text2);flex:1;white-space:nowrap}
+.pag-btn{font-size:11px;padding:3px 9px;min-width:32px}
+.pag-btn:disabled{opacity:.35;cursor:default}
+.pag-btn.active{background:var(--c-blue);color:#fff;border-color:var(--c-blue)}
+.pag-select{font-size:11px;padding:3px 6px;width:auto}
+
+/* CSV import */
+.csv-sample{font-family:monospace;font-size:11px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:10px;overflow-x:auto;white-space:pre;line-height:1.6;margin:10px 0}
+@media(max-width:800px){.g-form1{grid-template-columns:1fr 1fr 1fr}.g3{grid-template-columns:1fr 1fr}.gbot{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.g-form1,.g3,.gbot{grid-template-columns:1fr}.wrap{padding:1rem 0.75rem}}
+</style>
+</head>
+<body>
+
+<!-- Login screen -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">QA Tracker</div>
+    <div class="login-sub">Sign in to continue</div>
+    <div class="login-err" id="login-err">Incorrect username or password.</div>
+    <div class="login-field"><span class="lbl">Username</span><input id="login-user" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')g('login-pass').focus()"></div>
+    <div class="login-field"><span class="lbl">Password</span><input id="login-pass" type="password" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);cursor:pointer;margin-bottom:16px;justify-content:flex-start">
+      <input type="checkbox" id="login-remember" style="width:14px;height:14px"> Remember me
+    </label>
+    <button class="bp" onclick="doLogin()" style="width:100%;font-size:13px;padding:8px">Sign in</button>
+  </div>
+</div>
+
+<!-- Viewer: data-source chooser (shown after viewer login) -->
+<div class="view-chooser" id="view-chooser">
+  <div class="vc-box">
+    <div class="vc-title">Welcome, <span id="vc-username"></span></div>
+    <div class="vc-sub">Cloud sync is required for the viewer role. Enter your Bin ID below and connect.</div>
+    <div id="vc-cloud-fields" style="display:none;margin:0 0 10px;padding:10px 12px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r)">
+      <span class="lbl" style="margin-bottom:4px">Bin ID</span>
+      <input id="vc-bin-id" value="69df3320aaba882197feacf7" style="margin-bottom:8px">
+      <button class="bp" onclick="viewerConnectCloud()" style="width:100%;font-size:12px;padding:6px">Connect &amp; load</button>
+      <div class="m-err" id="vc-err" style="margin-top:6px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="topbar">
+  <span class="tb-title">QA Tracker</span>
+  <span class="tb-sub" id="tb-date"></span>
+  <span class="tb-space"></span>
+  <span class="user-pill" id="user-pill">
+    <span id="user-name">—</span>
+    <span class="role-tag" id="user-role-tag">—</span>
+  </span>
+  <span class="sync-pill" id="sync-pill"><span class="sync-dot"></span><span id="sync-txt">Local only</span></span>
+  <span class="cdn-pill off" id="cdn-pill" onclick="openCdnModal()" title="Cloudinary image storage">&#9729; Cloudinary</span>
+  <button onclick="openSettings()" style="font-size:11px;padding:4px 10px" data-admin-only>&#9881; Cloud sync</button>
+  <button onclick="openImport()" style="font-size:11px;padding:4px 10px" data-admin-only>&#8593; Import CSV</button>
+  <button onclick="smartExport()" style="font-size:11px;padding:4px 10px" id="export-btn">&#8595; Export CSV</button>
+  <button onclick="doLogout()" style="font-size:11px;padding:4px 10px;color:var(--text2)">Sign out</button>
+</div>
+
+<div class="wrap">
+
+<!-- Cloud modal -->
+<div class="modal-bg" id="cfg-overlay">
+  <div class="modal">
+    <div class="m-title">Cloud sync — JSONBin.io (free)</div>
+    <div class="m-sub">Share one bin so your whole team reads &amp; writes the same test cases in real time.</div>
+    <div class="step-row"><span class="step-num">1</span>Go to <strong>jsonbin.io</strong> → Sign up free → open Dashboard.</div>
+    <div class="step-row"><span class="step-num">2</span>Click <strong>API Keys</strong> → copy your <strong>Master Key</strong> (starts with <code>$2b$10$…</code>).</div>
+    <div class="step-row"><span class="step-num">3</span>Paste key → click <strong>Connect</strong>. A shared bin is auto-created.</div>
+    <div class="step-row"><span class="step-num">4</span>Share the <strong>Bin ID + Master Key</strong> with teammates.</div>
+    <div class="m-field"><span class="lbl">Master Key</span><input id="cfg-key" type="password" placeholder="$2b$10$…" autocomplete="off"></div>
+    <div class="m-field"><span class="lbl">Bin ID <span style="font-weight:400;color:var(--text3)">(blank = auto-create)</span></span><input id="cfg-bin" placeholder="e.g. 64a1b2c3d4e5f6a7b8c9d0e1"></div>
+    <div class="m-err" id="cfg-err"></div>
+    <div class="share-box" id="share-box">
+      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Share with teammates</div>
+      <div class="share-row"><span style="font-size:11px;color:var(--text2);width:68px;flex-shrink:0">Bin ID</span><span class="share-val" id="sh-bin"></span><button onclick="cp('sh-bin')" style="font-size:10px;padding:3px 8px">Copy</button></div>
+      <div class="share-row"><span style="font-size:11px;color:var(--text2);width:68px;flex-shrink:0">Master Key</span><span class="share-val" id="sh-key"></span><button onclick="cp('sh-key')" style="font-size:10px;padding:3px 8px">Copy</button></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">&#9888; Keep the Master Key private.</div>
+    </div>
+    <div class="m-foot">
+      <button onclick="disconnect()" class="bd-btn" style="font-size:11px;margin-right:auto">Disconnect</button>
+      <button onclick="closeSettings()">Cancel</button>
+      <button class="bp" onclick="connect()" id="cfg-btn">Connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Edit modal -->
+<div class="modal-bg" id="be-overlay">
+  <div class="modal">
+    <div class="m-title">Bulk edit — <span id="be-count-title"></span></div>
+    <div class="m-sub">Check the fields you want to update. Only checked fields will be changed on all selected cases.</div>
+    <div class="be-row"><input type="checkbox" id="be-chk-scenario" onchange="toggleBe('scenario')"><label class="be-lbl" for="be-chk-scenario">Scenario</label><div class="be-val" id="be-val-scenario"><input id="be-scenario" placeholder="e.g. Happy path"></div></div>
+    <div class="be-row"><input type="checkbox" id="be-chk-module" onchange="toggleBe('module')"><label class="be-lbl" for="be-chk-module">Module</label><div class="be-val" id="be-val-module"><input id="be-module" placeholder="e.g. Auth"></div></div>
+    <div class="be-row"><input type="checkbox" id="be-chk-priority" onchange="toggleBe('priority')"><label class="be-lbl" for="be-chk-priority">Priority</label><div class="be-val" id="be-val-priority"><select id="be-priority"><option>High</option><option selected>Medium</option><option>Low</option></select></div></div>
+    <div class="be-row"><input type="checkbox" id="be-chk-type" onchange="toggleBe('type')"><label class="be-lbl" for="be-chk-type">Type</label><div class="be-val" id="be-val-type"><select id="be-type"><option value="Positive">Positive</option><option value="Negative">Negative</option></select></div></div>
+    <div class="be-row"><input type="checkbox" id="be-chk-env" onchange="toggleBe('env')"><label class="be-lbl" for="be-chk-env">Environment</label><div class="be-val" id="be-val-env"><select id="be-env"><option value="Staging">Staging</option><option value="Production">Production</option></select></div></div>
+    <div class="be-row"><input type="checkbox" id="be-chk-status" onchange="toggleBe('status')"><label class="be-lbl" for="be-chk-status">Status</label><div class="be-val" id="be-val-status"><select id="be-status"><option value="Pass">Pass</option><option value="Fail">Fail</option><option value="In Test">In Test</option></select></div></div>
+    <div class="be-row"><input type="checkbox" id="be-chk-notes" onchange="toggleBe('notes')"><label class="be-lbl" for="be-chk-notes">Notes</label><div class="be-val" id="be-val-notes"><input id="be-notes" placeholder="Notes to apply to all selected"></div></div>
+    <div class="m-foot"><button onclick="closeModal('be-overlay')">Cancel</button><button class="bp" onclick="applyBulkEdit()">Apply to selected</button></div>
+  </div>
+</div>
+
+<!-- Detail modal -->
+<div class="modal-bg" id="detail-overlay">
+  <div class="modal wide">
+<!-- <div class="m-title" id="detail-title">Test case detail</div> -->
+    <div style="margin-bottom:1rem" id="detail-body"></div>
+    <div class="m-foot">
+      <button onclick="editFromDetail()" class="act-e act" style="font-size:12px;padding:5px 12px" data-admin-only>&#9998; Edit this case</button>
+      <button onclick="closeModal('detail-overlay')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- CSV Import modal -->
+<div class="modal-bg" id="import-overlay">
+  <div class="modal wide">
+    <div class="m-title">Import CSV</div>
+    <div class="m-sub">Upload a CSV file to add new test cases. Columns must match the sample format below. Existing cases are not affected.</div>
+    <div class="csv-sample" id="csv-sample"></div>
+    <div style="margin:12px 0">
+      <button onclick="downloadSampleCSV()" style="font-size:11px;padding:4px 10px;margin-bottom:10px">&#8595; Download sample CSV</button>
+      <div class="upzone" style="max-width:400px">
+        <input type="file" id="csv-file-input" accept=".csv,text/csv" onchange="handleCSVImport(this)">
+        <span>Click to choose a CSV file to import</span>
+      </div>
+    </div>
+    <div id="import-result" style="font-size:12px;color:var(--c-success);display:none;padding:8px 10px;background:var(--bg-success);border-radius:var(--r);border:1px solid #c0dd97"></div>
+    <div id="import-error" style="font-size:12px;color:var(--c-danger);display:none;padding:8px 10px;background:var(--bg-danger);border-radius:var(--r);border:1px solid #f09595"></div>
+    <div class="m-foot"><button onclick="closeModal('import-overlay')">Close</button></div>
+  </div>
+</div>
+
+<!-- Cloudinary modal -->
+<div class="modal-bg" id="cdn-overlay">
+  <div class="modal">
+    <div class="m-title">&#9729; Cloudinary image storage</div>
+    <div class="m-sub">Upload screenshots to Cloudinary so images are stored online and shared across all users. Free accounts support up to 25 GB.</div>
+    <div class="step-row"><span class="step-num">1</span>Sign up free at <strong>cloudinary.com</strong> → go to Dashboard.</div>
+    <div class="step-row"><span class="step-num">2</span>Copy your <strong>Cloud Name</strong> from the dashboard header.</div>
+    <div class="step-row"><span class="step-num">3</span>Go to <strong>Settings → Upload → Upload presets</strong> → create an <strong>Unsigned</strong> preset, copy its name.</div>
+    <div class="step-row"><span class="step-num">4</span>Paste both below and click <strong>Save &amp; connect</strong>. Images will upload automatically.</div>
+    <div class="m-field"><span class="lbl">Cloud Name</span><input id="cdn-cloud" placeholder="e.g. my-cloud-abc" autocomplete="off"></div>
+    <div class="m-field"><span class="lbl">Upload Preset <span style="font-weight:400;color:var(--text3)">(unsigned)</span></span><input id="cdn-preset" placeholder="e.g. qa_unsigned" autocomplete="off"></div>
+    <div class="m-field">
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer">
+        <input type="checkbox" id="cdn-autologin" style="width:14px;height:14px">
+        Auto-connect on startup (saves credentials locally)
+      </label>
+    </div>
+    <div class="m-err" id="cdn-err"></div>
+    <div class="m-foot">
+      <button onclick="disconnectCdn()" class="bd-btn" style="font-size:11px;margin-right:auto">Disconnect</button>
+      <button onclick="closeModal('cdn-overlay')">Cancel</button>
+      <button class="bp" onclick="saveCdnConfig()">Save &amp; connect</button>
+    </div>
+  </div>
+</div>
+<div id="pp" class="pp" onclick="handlePPClick(event)">
+  <div class="pp-toolbar" onclick="event.stopPropagation()">
+    <div class="pp-meta-txt" id="pp-meta"></div>
+    <span class="pp-zoom-info" id="pp-zoom">100%</span>
+    <button onclick="ppZoom(-0.25)">&#8722; Zoom out</button>
+    <button onclick="ppZoom(0.25)">&#43; Zoom in</button>
+    <button onclick="ppZoomFit()">Fit</button>
+    <button onclick="ppZoomReset()">100%</button>
+    <a id="pp-dl" download="evidence.png"><button>&#8595; Download original</button></a>
+    <button onclick="closePP()" style="background:rgba(200,0,0,.3);border-color:rgba(255,100,100,.4);color:#fff">&#10005; Close</button>
+  </div>
+  <div class="pp-canvas" id="pp-canvas" onwheel="ppWheel(event)">
+    <img id="pp-img" src="" alt="evidence" ondragstart="return false">
+  </div>
+</div>
+
+<!-- Screenshot preview panel (removed - using full-screen pp instead) -->
+
+<!-- Metrics -->
+<div class="metrics">
+  <div class="metric" id="mc-total"><div class="filter-dot"></div><div class="ml">Total</div><div class="mv" id="m-t">0</div><div class="mv-sub" id="m-t-sub"></div></div>
+  <div class="metric" id="mc-pass"><div class="filter-dot"></div><div class="ml">Passed</div><div class="mv" style="color:var(--c-success)" id="m-p">0</div><div class="mv-sub" id="m-p-sub"></div></div>
+  <div class="metric" id="mc-fail"><div class="filter-dot"></div><div class="ml">Failed</div><div class="mv" style="color:var(--c-danger)" id="m-f">0</div><div class="mv-sub" id="m-f-sub"></div></div>
+  <div class="metric" id="mc-intest"><div class="filter-dot"></div><div class="ml">In Test</div><div class="mv" style="color:#3c3489" id="m-it">0</div><div class="mv-sub" id="m-it-sub"></div></div>
+  <div class="metric" id="mc-pos"><div class="filter-dot"></div><div class="ml">Positive</div><div class="mv" style="color:var(--c-info)" id="m-pos">0</div><div class="mv-sub" id="m-pos-sub"></div></div>
+  <div class="metric" id="mc-neg"><div class="filter-dot"></div><div class="ml">Negative</div><div class="mv" style="color:var(--c-warn)" id="m-neg">0</div><div class="mv-sub" id="m-neg-sub"></div></div>
+  <div class="metric" id="mc-ev"><div class="filter-dot"></div><div class="ml">Evidence</div><div class="mv" id="m-ev">0</div><div class="mv-sub" id="m-ev-sub"></div></div>
+  <div class="metric" style="min-width:120px">
+    <div class="ml">Pass rate</div><div class="mv" id="m-r">—</div>
+    <div class="prog"><div class="pf" id="m-b" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- Form -->
+<div class="card form-wrap" id="fc" data-admin-only>
+  <div class="form-head">
+    <span class="form-title" id="ftitle">Add test case</span>
+    <div class="form-acts">
+      <button onclick="clearForm()" style="font-size:11px;padding:4px 10px">Clear</button>
+      <button class="bp" onclick="saveCase()" id="btn-save">+ Add test case</button>
+    </div>
+  </div>
+  <div id="rb" class="banner bwarn">
+    <span style="font-size:14px">&#8635;</span>
+    <span>Retesting: <strong id="rsrc"></strong> — fill Actual result &amp; Status, then save.</span>
+    <button style="margin-left:auto;font-size:11px;padding:3px 8px" onclick="clearForm()">Cancel</button>
+  </div>
+  <div class="g-form1">
+    <div>
+      <span class="lbl">Test ID *</span>
+      <input id="ftid" list="tc-list" placeholder="TC0001" autocomplete="off">
+      <datalist id="tc-list"></datalist>
+    </div>
+    <div><span class="lbl">Test Name *</span><input id="fn" placeholder="e.g. Login shows error on wrong password"></div>
+    <div><span class="lbl">Scenario</span><input id="fscen" placeholder="e.g. Happy path"></div>
+    <div><span class="lbl">Module</span><input id="fm" placeholder="e.g. Auth"></div>
+    <div><span class="lbl">Priority</span><select id="fp"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+    <div><span class="lbl">Type</span><select id="ftype"><option value="Positive">Positive</option><option value="Negative">Negative</option></select></div>
+    <div><span class="lbl">Environment</span><select id="fenv"><option value="Staging">Staging</option><option value="Production">Production</option></select></div>
+  </div>
+  <div class="g3">
+    <div><span class="lbl">Input data</span><input id="fi" placeholder="e.g. user=admin, pass=1234"></div>
+    <div><span class="lbl">Expected result</span><input id="fe" placeholder="e.g. Redirect to dashboard"></div>
+    <div><span class="lbl">Actual result</span><input id="fa" placeholder="e.g. Error 403 shown"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="gbot">
+    <div><span class="lbl">Notes</span><input id="fnotes" placeholder="Optional notes"></div>
+    <div><span class="lbl">Status *</span><select id="fst"><option value="Pass">Pass</option><option value="Fail">Fail</option><option value="In Test">In Test</option></select></div>
+    <div><span class="lbl">Date <span class="tz">UTC+7</span></span><input id="fd" readonly></div>
+    <div><span class="lbl">Time <span class="tz">UTC+7</span></span><input id="ft" readonly></div>
+    <div>
+      <span class="lbl">Screenshot evidence</span>
+      <div class="upzone"><input type="file" id="fimg" accept="image/*" onchange="handleImg(this)"><span id="ulbl">Click or drop image</span></div>
+    </div>
+  </div>
+  <div class="img-row" id="irow">
+    <img id="ithumb" style="height:40px;border-radius:5px;border:1px solid var(--bd2);flex-shrink:0">
+    <span id="iname" style="font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+    <button class="bd-btn" style="font-size:11px;padding:4px 10px;flex-shrink:0" onclick="removeImg()">&#10005; Remove image</button>
+  </div>
+</div>
+
+<!-- Filter panel -->
+<div class="panel" style="margin-bottom:8px">
+  <div class="filter-row" style="align-items:flex-end">
+    <div style="display:flex;flex-direction:column;gap:3px;flex:2;min-width:190px">
+      <span class="lbl">Search</span>
+      <div class="srch-wrap" style="flex:none"><input id="sq" placeholder="Search… (Enter to apply)" oninput="liveSearch()" onkeydown="if(event.key==='Enter')render()"><button class="srch-btn" onclick="render()">&#8629;</button></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:120px"><span class="lbl">Status</span><select id="fsf" onchange="resetPage();render()"><option value="All">All statuses</option><option>Pass</option><option>Fail</option><option value="In Test">In Test</option></select></div>
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:110px"><span class="lbl">Type</span><select id="ftf" onchange="resetPage();render()"><option value="All">All types</option><option>Positive</option><option>Negative</option></select></div>
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:118px"><span class="lbl">Env</span><select id="fenv-f" onchange="resetPage();render()"><option value="All">All envs</option><option>Staging</option><option>Production</option></select></div>
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:140px"><span class="lbl click" onclick="opk('dFrom')">From <span class="tz">UTC+7</span></span><input type="date" id="dFrom" onchange="resetPage();render()"></div>
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:140px"><span class="lbl click" onclick="opk('dTo')">To <span class="tz">UTC+7</span></span><input type="date" id="dTo" onchange="resetPage();render()"></div>
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:145px"><span class="lbl">Sort by</span><select id="fsort" onchange="resetPage();render()"><option value="order-desc">Order Desc</option><option value="order-asc" selected>Order Asc</option><option value="date-desc">Date Newest</option><option value="date-asc">Date Oldest</option></select></div>
+    <div style="display:flex;flex-direction:column;gap:3px"><span class="lbl">Debug</span><label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;height:32px;border:1px solid var(--bd2);border-radius:var(--r);padding:0 10px;background:var(--bg);white-space:nowrap"><input type="checkbox" id="show-internal" onchange="render()" style="width:13px;height:13px"> Show orderID</label></div>
+    <div style="display:flex;gap:6px;align-items:flex-end">
+      <button onclick="clearF()" style="font-size:11px;padding:5px 10px">Clear filters</button>
+      <button class="bd-btn" onclick="clearAll()" style="font-size:11px;padding:5px 10px" data-admin-only>Clear all</button>
+    </div>
+  </div>
+  <div class="filter-info" id="fi2"></div>
+</div>
+
+<!-- Bulk action bar -->
+<div class="bulk-bar" id="bulk-bar" data-admin-only>
+  <span class="bulk-count" id="bulk-count">0 selected</span>
+  <button onclick="openBulkEdit()" style="font-size:11px;padding:4px 10px;background:var(--bg-info);color:var(--c-info);border-color:#85b7eb">&#9998; Bulk edit</button>
+  <button onclick="bulkDelete()" class="bd-btn" style="font-size:11px;padding:4px 10px">&#10005; Delete selected</button>
+  <button onclick="clearSelection()" style="font-size:11px;padding:4px 10px;margin-left:auto">Deselect all</button>
+</div>
+
+<!-- Reorder panel -->
+<div class="reorder-panel" id="reorder-panel">
+  <div class="reorder-header">
+    <span class="reorder-info">&#9776; Drag rows to reorder. This updates each case's internal <strong>orderId</strong> (dates &amp; times are not changed). Click <strong>Save order</strong> to persist.</span>
+    <button class="bp" onclick="saveReorder()" style="margin-left:auto;font-size:11px;padding:4px 12px">&#10003; Save order</button>
+    <button onclick="cancelReorder()" style="font-size:11px;padding:4px 10px">Cancel</button>
+  </div>
+</div>
+
+<!-- Go to top / bottom -->
+<button class="goto-btn" id="goto-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Go to top">↑</button>
+<button class="goto-btn" id="goto-bot" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" title="Go to bottom">↓</button>
+
+<!-- Table -->
+<div class="card" id="table-card">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px 0">
+    <span style="font-size:11px;color:var(--text3)" id="table-count"></span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <label style="font-size:11px;color:var(--text2)">Per page</label>
+      <select class="pag-select" id="page-size" onchange="onPageSizeChange()">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="0">Show All</option>
+      </select>
+      <button id="reorder-btn" onclick="toggleReorder()" style="font-size:11px;padding:3px 10px" data-admin-only>&#9776; Reorder</button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table id="main-table">
+      <thead id="thead"></thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+  <!-- Pagination bar -->
+  <div class="pag-bar" id="pag-bar">
+    <span class="pag-info" id="pag-info"></span>
+    <button class="pag-btn" id="pag-first" onclick="gotoPage(1)" title="First page">«</button>
+    <button class="pag-btn" id="pag-prev" onclick="gotoPage(currentPage-1)" title="Previous page">‹</button>
+    <span id="pag-pages" style="display:flex;gap:4px;flex-wrap:wrap"></span>
+    <button class="pag-btn" id="pag-next" onclick="gotoPage(currentPage+1)" title="Next page">›</button>
+    <button class="pag-btn" id="pag-last" onclick="gotoPage(totalPages())" title="Last page">»</button>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ══════════════ STATE ══════════════ */
+let cases = [], editId = null, pImg = null, imgRemoved = false;
+let cKey = '', cBin = '', syncTimer = null;
+let selectedIds = new Set();
+let reorderMode = false, reorderOriginal = [];
+let detailOpenId = null;
+let ppZoomLevel = 1, ppPanning = false, ppPanStart = {x:0,y:0}, ppScrollStart = {x:0,y:0};
+/* ── Pagination ── */
+let currentPage = 1;
+let itemsPerPage = 10;
+/* ── Auth ── */
+let currentUser = null, currentRole = null;
+/* ── Cloudinary ── */
+let cdnCloud = '', cdnPreset = '';
+const JBIN = 'https://api.jsonbin.io/v3';
+
+/* ══════════════ UTILS ══════════════ */
+function u7() { const d = new Date(Date.now() + 7*3600000); return {date: d.toISOString().slice(0,10), time: d.toISOString().slice(11,16)}; }
+function u7dt() { const d = new Date(Date.now() + 7*3600000); return d.toISOString().slice(0,16).replace('T','_').replace(/:/g,'-'); }
+function fmt(d) { if(!d) return '—'; const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function opk(id) { const e = document.getElementById(id); e.focus(); try { e.showPicker(); } catch(x) {} }
+function cp(id) { try { navigator.clipboard.writeText(document.getElementById(id).textContent); } catch(e) {} }
+function g(id) { return document.getElementById(id); }
+
+/* ══════════════ AUTH ══════════════ */
+/* Location: JS section, after UTILS */
+const ACCOUNTS = {
+  admin: { password: 'adminer', role: 'admin' },
+  view:  { password: 'viewer',  role: 'view'  }
+};
+
+function doLogin() {
+  const user = g('login-user').value.trim().toLowerCase();
+  const pass = g('login-pass').value;
+  const account = ACCOUNTS[user];
+  if (!account || account.password !== pass) {
+    g('login-err').style.display = 'block';
+    g('login-pass').value = '';
+    return;
+  }
+  currentUser = user;
+  currentRole = account.role;
+  if (g('login-remember').checked) {
+    localStorage.setItem('qa_session_user', user);
+    localStorage.setItem('qa_session_role', currentRole);
+  } else {
+    sessionStorage.setItem('qa_session_user', user);
+    sessionStorage.setItem('qa_session_role', currentRole);
+  }
+  applyRole();
+  g('login-screen').style.display = 'none';
+  if (currentRole === 'view') {
+    /* Show data-source chooser before loading the app */
+    g('vc-username').textContent = currentUser;
+    g('vc-cloud-fields').style.display = 'block';
+    g('vc-err').style.display = 'none';
+    g('view-chooser').classList.add('on');
+  } else {
+    appStart();
+  }
+}
+
+function doLogout() {
+  currentUser = null; currentRole = null;
+  localStorage.removeItem('qa_session_user');
+  localStorage.removeItem('qa_session_role');
+  sessionStorage.removeItem('qa_session_user');
+  sessionStorage.removeItem('qa_session_role');
+  /* Disconnect viewer cloud sync if active */
+  if (syncTimer) { clearInterval(syncTimer); syncTimer = null; }
+  cKey = ''; cBin = '';
+  g('login-user').value = '';
+  g('login-pass').value = '';
+  g('login-err').style.display = 'none';
+  g('view-chooser').classList.remove('on');
+  g('login-screen').style.display = 'flex';
+  document.body.className = '';
+  document.body.style.overflow = '';
+}
+
+function applyRole() {
+  /* Set body class so CSS can hide admin-only elements */
+  document.body.classList.toggle('role-view', currentRole === 'view');
+  /* Update user pill in topbar */
+  g('user-name').textContent = currentUser || '—';
+  g('user-role-tag').textContent = currentRole || '—';
+  g('user-role-tag').className = 'role-tag' + (currentRole === 'view' ? ' view' : '');
+}
+
+function tryAutoLogin() {
+  const user = sessionStorage.getItem('qa_session_user') || localStorage.getItem('qa_session_user');
+  const role = sessionStorage.getItem('qa_session_role') || localStorage.getItem('qa_session_role');
+  if (user && ACCOUNTS[user] && role) {
+    currentUser = user; currentRole = role;
+    applyRole();
+    g('login-screen').style.display = 'none';
+    if (role === 'view') {
+      /* Viewer auto-login: show chooser */
+      g('vc-username').textContent = currentUser;
+      g('vc-cloud-fields').style.display = 'block';
+      g('vc-err').style.display = 'none';
+      g('view-chooser').classList.add('on');
+      return true; /* but don't call appStart yet */
+    }
+    return true;
+  }
+  return false;
+}
+
+/* ── Viewer data-source chooser ── */
+const VIEWER_KEY = '$2a$10$mzKqbFbVVy9F.yvV5bttuOTZjKk3SoijTqA8BzPkNMlXNDREJIcM6';
+
+function viewerChooseCloud() {
+  /* Toggle bin-id input field */
+  const f = g('vc-cloud-fields');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+async function viewerConnectCloud() {
+  const bin = g('vc-bin-id').value.trim();
+  const errEl = g('vc-err');
+  if (!bin) { errEl.textContent = 'Please enter a Bin ID.'; errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+  const btn = g('vc-cloud-fields').querySelector('.bp');
+  btn.textContent = 'Connecting…'; btn.disabled = true;
+  try {
+    const r = await fetch(`${JBIN}/b/${bin}/latest`, {headers:{'X-Master-Key': VIEWER_KEY}});
+    if (!r.ok) throw new Error('Invalid Bin ID or access denied.');
+    cKey = VIEWER_KEY; cBin = bin;
+    g('view-chooser').classList.remove('on');
+    document.body.style.overflow = '';
+    appStart();
+    /* Start read-only auto-sync (pull only) */
+    if (syncTimer) clearInterval(syncTimer);
+    syncTimer = setInterval(() => pull(true), 30000);
+    syncBadge('ok', 'Viewer sync ✓');
+  } catch(e) {
+    errEl.textContent = String(e.message || e);
+    errEl.style.display = 'block';
+  }
+  btn.textContent = 'Connect & load'; btn.disabled = false;
+}
+
+function viewerChooseLocal() {
+  cKey = ''; cBin = '';
+  g('view-chooser').classList.remove('on');
+  document.body.style.overflow = '';
+  appStart();
+  syncBadge('', 'Local only');
+}
+/* Location: JS section, after AUTH */
+function loadCdnConfig() {
+  cdnCloud  = localStorage.getItem('qa_cdn_cloud')  || '';
+  cdnPreset = localStorage.getItem('qa_cdn_preset') || '';
+  updateCdnPill();
+}
+
+function updateCdnPill() {
+  const pill = g('cdn-pill');
+  if (cdnCloud && cdnPreset) {
+    pill.className = 'cdn-pill on';
+    pill.title = `Cloudinary: ${cdnCloud} — click to configure`;
+  } else {
+    pill.className = 'cdn-pill off';
+    pill.title = 'Cloudinary not configured — click to set up';
+  }
+}
+
+function openCdnModal() {
+  g('cdn-cloud').value  = cdnCloud;
+  g('cdn-preset').value = cdnPreset;
+  g('cdn-autologin').checked = !!(localStorage.getItem('qa_cdn_cloud'));
+  g('cdn-err').style.display = 'none';
+  openModal('cdn-overlay');
+}
+
+function saveCdnConfig() {
+  const cloud  = g('cdn-cloud').value.trim();
+  const preset = g('cdn-preset').value.trim();
+  if (!cloud || !preset) { g('cdn-err').textContent = 'Both fields are required.'; g('cdn-err').style.display = 'block'; return; }
+  cdnCloud = cloud; cdnPreset = preset;
+  if (g('cdn-autologin').checked) {
+    localStorage.setItem('qa_cdn_cloud',  cloud);
+    localStorage.setItem('qa_cdn_preset', preset);
+  } else {
+    localStorage.removeItem('qa_cdn_cloud');
+    localStorage.removeItem('qa_cdn_preset');
+  }
+  updateCdnPill();
+  closeModal('cdn-overlay');
+}
+
+function disconnectCdn() {
+  cdnCloud = ''; cdnPreset = '';
+  localStorage.removeItem('qa_cdn_cloud');
+  localStorage.removeItem('qa_cdn_preset');
+  updateCdnPill();
+  closeModal('cdn-overlay');
+}
+
+async function uploadToCdn(file) {
+  /* Upload file to Cloudinary, return {url, name} or null */
+  if (!cdnCloud || !cdnPreset) return null;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', cdnPreset);
+  fd.append('folder', 'qa-tracker');
+  try {
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${cdnCloud}/image/upload`, {method:'POST', body: fd});
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    return { url: d.secure_url, name: file.name };
+  } catch(e) {
+    console.error('Cloudinary upload failed:', e);
+    return null;
+  }
+}
+
+/* ══════════════ MODAL HELPERS ══════════════ */
+/* Location: JS section, after UTILS */
+function openModal(id) { g(id).classList.add('on'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { g(id).classList.remove('on'); document.body.style.overflow = ''; }
+
+/* ESC key closes any open modal */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['cfg-overlay','be-overlay','detail-overlay','import-overlay','cdn-overlay'].forEach(id => {
+      if (g(id) && g(id).classList.contains('on')) closeModal(id);
+    });
+  }
+});
+
+/* Click on backdrop (not modal content) closes the modal */
+['cfg-overlay','be-overlay','detail-overlay','import-overlay','cdn-overlay'].forEach(id => {
+  document.addEventListener('click', e => {
+    const el = g(id);
+    if (el && el.classList.contains('on') && e.target === el) closeModal(id);
+  });
+});
+function addMinutes(dateStr, timeStr, delta) {
+  if (!dateStr || !timeStr) return {date: dateStr, time: timeStr};
+  const [h, m] = timeStr.split(':').map(Number);
+  const [y, mo, d] = dateStr.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, mo-1, d, h, m) + delta * 60000);
+  const nd = dt.toISOString();
+  return {date: nd.slice(0,10), time: nd.slice(11,16)};
+}
+
+/* ══════════════ STORAGE / SYNC ══════════════ */
+function loadLocal() {
+  try { cases = JSON.parse(localStorage.getItem('qa_cases') || '[]'); } catch(e) { cases = []; }
+  cKey = localStorage.getItem('qa_key') || '';
+  cBin = localStorage.getItem('qa_bin') || '';
+}
+function saveLocal() { localStorage.setItem('qa_cases', JSON.stringify(cases)); }
+function cloudPayload() {
+  return cases.map(c => {
+    /* Include img if it's a Cloudinary URL (starts with http); strip if base64 */
+    const isCdnUrl = c.img && c.img.startsWith('http');
+    const {img, ...rest} = c;
+    return isCdnUrl ? {...rest, img: c.img, imgName: c.imgName, hasImg: true}
+                    : {...rest, hasImg: !!c.img};
+  });
+}
+
+function syncBadge(state, msg) { const p = g('sync-pill'); p.className = 'sync-pill' + (state ? ' '+state : ''); g('sync-txt').textContent = msg; }
+async function push() {
+  if (!cKey || !cBin) return; syncBadge('syncing','Saving…');
+  try { const r = await fetch(`${JBIN}/b/${cBin}`, {method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':cKey,'X-Bin-Versioning':'false'},body:JSON.stringify({cases:cloudPayload()})}); if (!r.ok) throw new Error(r.status); syncBadge('ok','Synced ✓'); }
+  catch(e) { syncBadge('err','Sync error'); }
+}
+async function pull(silent) {
+  if (!cKey || !cBin) return; if (!silent) syncBadge('syncing','Fetching…');
+  try {
+    const r = await fetch(`${JBIN}/b/${cBin}/latest`, {headers:{'X-Master-Key':cKey}}); if (!r.ok) throw new Error(r.status);
+    const d = await r.json(); const remote = (d.record && d.record.cases) || [];
+    const lmap = {}; cases.forEach(c => { lmap[c.id] = c; });
+    cases = remote.map(rc => {
+      const lc = lmap[rc.id];
+      /* If remote already has a Cloudinary URL, use it; otherwise fall back to local base64 */
+      const remoteIsUrl = rc.img && rc.img.startsWith('http');
+      return {
+        ...rc,
+        img: remoteIsUrl ? rc.img : (lc ? lc.img||null : null),
+        imgName: rc.imgName || (lc ? lc.imgName||null : null)
+      };
+    });
+    saveLocal(); render(); syncBadge('ok','Synced ✓');
+  } catch(e) { syncBadge('err','Fetch error'); }
+}
+function startSync() { if (syncTimer) clearInterval(syncTimer); if (cKey && cBin) { syncTimer = setInterval(() => pull(true), 30000); syncBadge('ok','Cloud connected'); } }
+
+/* ══════════════ CLOUD SETTINGS ══════════════ */
+function openSettings() { g('cfg-key').value = cKey; g('cfg-bin').value = cBin; g('cfg-err').style.display = 'none'; updateShare(); openModal('cfg-overlay'); }
+function closeSettings() { closeModal('cfg-overlay'); }
+function updateShare() { const b = g('share-box'); if (cBin && cKey) { g('sh-bin').textContent = cBin; g('sh-key').textContent = cKey; b.style.display = 'block'; } else b.style.display = 'none'; }
+async function connect() {
+  const key = g('cfg-key').value.trim(), bin = g('cfg-bin').value.trim(), errEl = g('cfg-err'), btn = g('cfg-btn');
+  if (!key) { errEl.textContent = 'Please enter your Master Key.'; errEl.style.display = 'block'; return; }
+  btn.textContent = 'Connecting…'; btn.disabled = true; errEl.style.display = 'none';
+  try {
+    let fb = bin;
+    if (!fb) { const r = await fetch(`${JBIN}/b`,{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':key,'X-Bin-Name':'qa-tracker','X-Bin-Private':'true','X-Bin-Versioning':'false'},body:JSON.stringify({cases:cloudPayload()})}); if (!r.ok) { const e = await r.json(); throw new Error(e.message||r.status); } fb = (await r.json()).metadata.id; }
+    else { const r = await fetch(`${JBIN}/b/${fb}/latest`, {headers:{'X-Master-Key':key}}); if (!r.ok) { const e = await r.json(); throw new Error(e.message||r.status); } }
+    cKey = key; cBin = fb; localStorage.setItem('qa_key', cKey); localStorage.setItem('qa_bin', cBin);
+    updateShare(); await pull(false); await push(); startSync(); btn.textContent = 'Connect'; btn.disabled = false; closeModal('cfg-overlay');
+  } catch(e) { errEl.textContent = 'Connection failed: ' + e.message; errEl.style.display = 'block'; btn.textContent = 'Connect'; btn.disabled = false; }
+}
+function disconnect() { cKey = ''; cBin = ''; localStorage.removeItem('qa_key'); localStorage.removeItem('qa_bin'); if (syncTimer) clearInterval(syncTimer); syncBadge('','Local only'); closeModal('cfg-overlay'); }
+
+/* ══════════════ IMAGE HANDLING ══════════════ */
+function storeImgLocal(file) {
+  /* Fallback: store as base64 when Cloudinary is not configured */
+  return new Promise(res => {
+    if (file.size <= 2 * 1024 * 1024) {
+      const reader = new FileReader();
+      reader.onload = e => res({full: e.target.result, name: file.name, isCdn: false});
+      reader.onerror = () => res(null);
+      reader.readAsDataURL(file);
+    } else {
+      const img = new Image(), url = URL.createObjectURL(file);
+      img.onload = () => {
+        const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+        c.getContext('2d').drawImage(img, 0, 0); URL.revokeObjectURL(url);
+        res({full: c.toDataURL('image/jpeg', 0.92), name: file.name, isCdn: false});
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); res(null); };
+      img.src = url;
+    }
+  });
+}
+
+async function handleImg(inp) {
+  const file = inp.files[0]; if (!file) return;
+  g('ulbl').textContent = 'Uploading…';
+  let result = null;
+  if (cdnCloud && cdnPreset) {
+    /* Upload to Cloudinary and get back a URL */
+    const cdn = await uploadToCdn(file);
+    if (cdn) {
+      result = {full: cdn.url, name: cdn.name, isCdn: true};
+    } else {
+      g('ulbl').textContent = 'Cloudinary failed, storing locally…';
+      result = await storeImgLocal(file);
+    }
+  } else {
+    result = await storeImgLocal(file);
+  }
+  if (!result) { g('ulbl').textContent = 'Click or drop image'; return; }
+  pImg = result; imgRemoved = false;
+  /* Preview: use a thumbnail-sized version for the form preview (not full Cloudinary URL for thumbnail) */
+  const thumbSrc = result.isCdn
+    ? result.full.replace('/upload/', '/upload/w_200,h_120,c_fill/') /* Cloudinary transformation */
+    : result.full;
+  g('ithumb').src = thumbSrc;
+  g('iname').textContent = result.name + (result.isCdn ? ' (Cloudinary)' : ' (local)');
+  g('irow').style.display = 'flex';
+  g('ulbl').textContent = 'Replace image';
+}
+function removeImg() { pImg = null; imgRemoved = true; g('fimg').value = ''; g('ulbl').textContent = 'Click or drop image'; g('irow').style.display = 'none'; }
+function resetImg() { pImg = null; imgRemoved = false; g('fimg').value = ''; g('ulbl').textContent = 'Click or drop image'; g('irow').style.display = 'none'; }
+
+/* ══════════════ FORM CRUD ══════════════ */
+function buildTCList() {
+  const dl = g('tc-list'); dl.innerHTML = '';
+  for (let i = 1; i <= 1000; i++) { const o = document.createElement('option'); o.value = 'TC' + String(i).padStart(4,'0'); dl.appendChild(o); }
+}
+function saveCase() {
+  const tid = g('ftid').value.trim(), name = g('fn').value.trim();
+  if (!tid) { g('ftid').focus(); return; }
+  if (!name) { g('fn').focus(); return; }
+  const ex = editId ? cases.find(c => c.id === editId) : null;
+  const n = u7();
+  const obj = {
+    id: editId || Date.now()+'', testId: tid, name,
+    scenario: g('fscen').value.trim(), module: g('fm').value.trim(),
+    priority: g('fp').value, type: g('ftype').value, env: g('fenv').value,
+    input: g('fi').value.trim(), expected: g('fe').value.trim(), actual: g('fa').value.trim(),
+    status: g('fst').value, notes: g('fnotes').value.trim(),
+    date: editId && ex ? ex.date : n.date,
+    time: editId && ex ? ex.time : n.time,
+    orderId: editId && ex ? ex.orderId : 0, /* 0 = placed at front; reassigned by ensureOrderIds */
+    img: pImg ? pImg.full : imgRemoved ? null : (ex ? ex.img||null : null),
+    imgName: pImg ? pImg.name : imgRemoved ? null : (ex ? ex.imgName||null : null),
+  };
+  if (editId) { const i = cases.findIndex(c => c.id === editId); if (i > -1) cases[i] = obj; editId = null; }
+  else { obj.orderId = 0; cases.unshift(obj); ensureOrderIds(); }
+  saveLocal(); push(); clearForm(); render();
+}
+function clearForm() {
+  ['ftid','fn','fscen','fm','fi','fe','fa','fnotes'].forEach(id => g(id).value = '');
+  g('fp').value = 'Medium'; g('fst').value = 'Pass'; g('ftype').value = 'Positive'; g('fenv').value = 'Staging';
+  const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
+  resetImg(); editId = null;
+  g('ftitle').textContent = 'Add test case'; g('btn-save').textContent = '+ Add test case';
+  g('rb').classList.remove('on'); render();
+}
+function editCase(id) {
+  const c = cases.find(x => x.id === id); if (!c) return; editId = id;
+  g('ftid').value = c.testId||''; g('fn').value = c.name||''; g('fscen').value = c.scenario||''; g('fm').value = c.module||'';
+  g('fp').value = c.priority||'Medium'; g('ftype').value = c.type||'Positive'; g('fenv').value = c.env||'Staging';
+  g('fi').value = c.input||''; g('fe').value = c.expected||''; g('fa').value = c.actual||'';
+  g('fst').value = c.status||'Pass'; g('fnotes').value = c.notes||'';
+  g('fd').value = c.date||''; g('ft').value = c.time||'';
+  resetImg();
+  if (c.img) { g('ithumb').src = c.img; g('iname').textContent = c.imgName||'screenshot'; g('irow').style.display = 'flex'; g('ulbl').textContent = 'Replace image'; }
+  g('ftitle').textContent = 'Edit test case'; g('btn-save').textContent = 'Save changes';
+  g('fc').scrollIntoView({behavior:'smooth', block:'start'});
+  /* Ensure form-head (with Save button) clears the sticky topbar */
+  setTimeout(() => {
+    const fc = g('fc');
+    const top = fc.getBoundingClientRect().top + window.scrollY - 58;
+    window.scrollTo({top: Math.max(0, top), behavior: 'smooth'});
+  }, 80);
+  render();
+}
+function editFromDetail() { const id = detailOpenId; g('detail-overlay').classList.remove('on'); editCase(id); }
+function retestCase(id) {
+  const c = cases.find(x => x.id === id); if (!c) return; editId = null;
+  g('ftid').value = c.testId||''; g('fn').value = c.name||''; g('fscen').value = c.scenario||''; g('fm').value = c.module||'';
+  g('fp').value = c.priority||'Medium'; g('ftype').value = c.type||'Positive'; g('fenv').value = c.env||'Staging';
+  g('fi').value = c.input||''; g('fe').value = c.expected||'';
+  g('fa').value = ''; g('fst').value = 'In Test'; g('fnotes').value = '';
+  const n = u7(); g('fd').value = n.date; g('ft').value = n.time; resetImg();
+  g('ftitle').textContent = 'Retest case'; g('btn-save').textContent = '+ Save retest';
+  g('rb').classList.add('on');
+  g('rsrc').textContent = (c.testId ? c.testId+' · ' : '') + c.name + (c.date ? ' (' + fmt(c.date) + ')' : '');
+  g('fc').scrollIntoView({behavior:'smooth'}); g('fa').focus();
+}
+function deleteCase(id) {
+  if (!confirm('Delete this test case?')) return;
+  cases = cases.filter(c => c.id !== id); selectedIds.delete(id); if (editId === id) clearForm();
+  saveLocal(); push(); render();
+}
+function clearAll() {
+  if (!cases.length) return;
+  if (confirm('Delete ALL test cases? This cannot be undone.')) { cases = []; selectedIds.clear(); clearForm(); saveLocal(); push(); render(); }
+}
+
+/* ══════════════ DETAIL VIEW ══════════════ */
+function openDetail(id) {
+  const c = cases.find(x => x.id === id); if (!c) return;
+  detailOpenId = id;
+  const stCls = c.status === 'Pass' ? 'pass' : c.status === 'Fail' ? 'fail' : 'intest';
+  const priCls = c.priority === 'High' ? 'bhi' : c.priority === 'Low' ? 'blo' : 'bmed';
+  const envCls = (c.env||'Staging') === 'Production' ? 'bprod' : 'bstag';
+  const typCls = (c.type||'Positive') === 'Positive' ? 'pos' : 'neg';
+  // g('detail-title').textContent = (c.testId||'') + (c.testId && c.name ? ' — ' : '') + (c.name||''); /* no longer used */
+  g('detail-body').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-field"><span class="detail-lbl">Test ID</span><span class="detail-val mono">${esc(c.testId||'—')}</span></div>
+      <div class="detail-field"><span class="detail-lbl">Date &amp; Time</span><span class="detail-val">${fmt(c.date)} ${c.time||''} <span class="tz">UTC+7</span></span></div>
+      <div class="detail-field detail-full"><span class="detail-lbl">Test Name</span><span class="detail-val" style="font-weight:600;font-size:14px">${esc(c.name||'—')}</span></div>
+      <div class="detail-sep"></div>
+      <div class="detail-field"><span class="detail-lbl">Scenario</span><span class="detail-val">${esc(c.scenario||'—')}</span></div>
+      <div class="detail-field"><span class="detail-lbl">Module</span><span class="detail-val">${esc(c.module||'—')}</span></div>
+      <div class="detail-field"><span class="detail-lbl">Priority</span><span class="badge ${priCls}" style="font-size:12px;margin-top:2px">${esc(c.priority||'—')}</span></div>
+      <div class="detail-field"><span class="detail-lbl">Type</span><span class="badge ${typCls}" style="font-size:12px;margin-top:2px">${(c.type||'Positive')==='Positive'?'+ Positive':'− Negative'}</span></div>
+      <div class="detail-field"><span class="detail-lbl">Status</span><span class="badge ${stCls}" style="font-size:12px;margin-top:2px">${esc(c.status||'—')}</span></div>
+      <div class="detail-field"><span class="detail-lbl">Environment</span><span class="badge ${envCls}" style="font-size:12px;margin-top:2px">${esc(c.env||'Staging')}</span></div>
+      <div class="detail-sep"></div>
+      <div class="detail-field detail-full"><span class="detail-lbl">Input data</span><span class="detail-val" style="color:var(--text2)">${esc(c.input||'—')}</span></div>
+      <div class="detail-field detail-full"><span class="detail-lbl">Expected result</span><span class="detail-val">${esc(c.expected||'—')}</span></div>
+      <div class="detail-field detail-full"><span class="detail-lbl">Actual result</span><span class="detail-val" style="font-weight:500">${esc(c.actual||'—')}</span></div>
+      <div class="detail-field detail-full"><span class="detail-lbl">Notes</span><span class="detail-val" style="color:var(--text2)">${esc(c.notes||'—')}</span></div>
+      ${c.img ? `<div class="detail-field detail-full"><span class="detail-lbl">Screenshot</span><div style="margin-top:6px"><img src="${c.img}" onclick="openPP('${c.id}')" style="max-height:180px;max-width:100%;border-radius:6px;border:1px solid var(--bd);cursor:pointer;object-fit:contain" title="Click to view full size"><p style="font-size:11px;color:var(--text3);margin-top:4px">${esc(c.imgName||'screenshot')} — click to view full size</p></div></div>` : ''}
+    </div>`;
+  openModal('detail-overlay');
+}
+
+/* ══════════════ IMAGE PREVIEW (FULL RES + ZOOM) ══════════════ */
+function openPP(id) {
+  const c = cases.find(x => x.id === id); if (!c || !c.img) return;
+  g('pp-img').src = c.img;
+  g('pp-meta').textContent = (c.testId||'') + (c.testId?' · ':'') + (c.name||'') + ' — ' + (c.imgName||'screenshot');
+  g('pp-dl').href = c.img;
+  g('pp-dl').download = (c.imgName || 'evidence_' + (c.testId||c.id));
+  ppZoomLevel = 1;
+  g('pp').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  /* Wait for image to load so natural dimensions are available, then fit */
+  const img = g('pp-img');
+  if (img.complete && img.naturalWidth) {
+    ppZoomFit();
+  } else {
+    img.onload = () => ppZoomFit();
+  }
+}
+function closePP() { g('pp').classList.remove('on'); g('pp-img').src = ''; document.body.style.overflow = ''; }
+function handlePPClick(e) { if (e.target === g('pp') || e.target === g('pp-canvas')) closePP(); }
+function applyZoom() {
+  g('pp-img').style.transform = `scale(${ppZoomLevel})`;
+  g('pp-zoom').textContent = Math.round(ppZoomLevel * 100) + '%';
+}
+function ppZoom(delta) { ppZoomLevel = Math.max(0.1, Math.min(8, ppZoomLevel + delta)); applyZoom(); }
+function ppZoomFit() {
+  const canvas = g('pp-canvas'), img = g('pp-img');
+  const scaleX = (canvas.clientWidth - 40) / (img.naturalWidth || canvas.clientWidth);
+  const scaleY = (canvas.clientHeight - 40) / (img.naturalHeight || canvas.clientHeight);
+  ppZoomLevel = Math.min(scaleX, scaleY, 1);
+  applyZoom();
+  /* Re-center scroll after fitting */
+  canvas.scrollLeft = 0; canvas.scrollTop = 0;
+}
+function ppZoomReset() { ppZoomLevel = 1; applyZoom(); }
+function ppWheel(e) { e.preventDefault(); ppZoom(e.deltaY < 0 ? 0.15 : -0.15); }
+/* Pan with mouse drag */
+g('pp-canvas').addEventListener('mousedown', e => {
+  if (e.target.tagName === 'IMG') { ppPanning = true; ppPanStart = {x:e.clientX, y:e.clientY}; ppScrollStart = {x:g('pp-canvas').scrollLeft, y:g('pp-canvas').scrollTop}; e.preventDefault(); }
+});
+document.addEventListener('mousemove', e => {
+  if (!ppPanning) return;
+  g('pp-canvas').scrollLeft = ppScrollStart.x - (e.clientX - ppPanStart.x);
+  g('pp-canvas').scrollTop = ppScrollStart.y - (e.clientY - ppPanStart.y);
+});
+document.addEventListener('mouseup', () => { ppPanning = false; });
+
+/* ══════════════ SELECTION & BULK OPS ══════════════ */
+function toggleSelect(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+  updateBulkBar();
+  const row = document.querySelector(`tr[data-id="${id}"]`);
+  if (row) { row.classList.toggle('selected', selectedIds.has(id)); const cb = row.querySelector('.row-cb'); if (cb) cb.checked = selectedIds.has(id); }
+}
+function toggleSelectAll(chk) {
+  const f = getF();
+  if (chk.checked) f.forEach(c => selectedIds.add(c.id)); else f.forEach(c => selectedIds.delete(c.id));
+  updateBulkBar();
+  document.querySelectorAll('.row-cb').forEach(cb => { const id = cb.dataset.id; cb.checked = selectedIds.has(id); cb.closest('tr').classList.toggle('selected', selectedIds.has(id)); });
+}
+function clearSelection() { selectedIds.clear(); updateBulkBar(); document.querySelectorAll('.row-cb').forEach(cb => { cb.checked = false; cb.closest('tr').classList.remove('selected'); }); const sa = g('select-all'); if (sa) sa.checked = false; }
+function updateBulkBar() { const n = selectedIds.size; g('bulk-bar').classList.toggle('on', n > 0); g('bulk-count').textContent = n + ' selected'; }
+function bulkDelete() {
+  const n = selectedIds.size; if (!n) return;
+  if (!confirm(`Delete ${n} selected test case${n>1?'s':''}?`)) return;
+  cases = cases.filter(c => !selectedIds.has(c.id));
+  if (editId && selectedIds.has(editId)) clearForm();
+  selectedIds.clear(); saveLocal(); push(); render();
+}
+function openBulkEdit() {
+  if (!selectedIds.size) return;
+  g('be-count-title').textContent = selectedIds.size + ' case' + (selectedIds.size > 1 ? 's' : '');
+  ['scenario','module','priority','type','env','status','notes'].forEach(f => { g('be-chk-'+f).checked = false; g('be-val-'+f).classList.remove('on'); });
+  openModal('be-overlay');
+}
+function toggleBe(f) { g('be-val-'+f).classList.toggle('on', g('be-chk-'+f).checked); }
+function applyBulkEdit() {
+  const updates = {};
+  if (g('be-chk-scenario').checked) updates.scenario = g('be-scenario').value;
+  if (g('be-chk-module').checked) updates.module = g('be-module').value;
+  if (g('be-chk-priority').checked) updates.priority = g('be-priority').value;
+  if (g('be-chk-type').checked) updates.type = g('be-type').value;
+  if (g('be-chk-env').checked) updates.env = g('be-env').value;
+  if (g('be-chk-status').checked) updates.status = g('be-status').value;
+  if (g('be-chk-notes').checked) updates.notes = g('be-notes').value;
+  if (!Object.keys(updates).length) { alert('Check at least one field to update.'); return; }
+  cases = cases.map(c => selectedIds.has(c.id) ? {...c, ...updates} : c);
+  saveLocal(); push(); closeModal('be-overlay'); render();
+}
+
+/* ══════════════ REORDER (orderId-based, no timestamp mutation) ══════════════ */
+let dragSrcId = null;
+
+function nextOrderId() {
+  /* Assign orderId to any case that doesn't have one yet */
+  let max = 0;
+  cases.forEach(c => { if ((c.orderId||0) > max) max = c.orderId; });
+  return max + 1;
+}
+function ensureOrderIds() {
+  /* Cases with orderId=0 or missing get placed at the front of the sequence.
+     Existing valid orderIds are preserved and gaps are filled. */
+  const hasOrder = cases.filter(c => c.orderId && c.orderId > 0);
+  const noOrder  = cases.filter(c => !c.orderId || c.orderId <= 0);
+  /* Give unordered cases an orderId starting at 1, push others up */
+  if (noOrder.length === 0) return; /* all already have orderIds */
+  /* Full re-index: preserve relative order of existing, put noOrder at front */
+  const combined = [...noOrder, ...hasOrder];
+  combined.forEach((c, i) => { c.orderId = i + 1; });
+  /* Sync back to cases array maintaining the combined order */
+  const map = {}; combined.forEach(c => map[c.id] = c);
+  cases = cases.map(c => map[c.id] || c);
+}
+
+function toggleReorder() {
+  reorderMode = !reorderMode;
+  if (reorderMode) {
+    reorderOriginal = cases.map(c => c.id);
+    g('reorder-panel').classList.add('on');
+    g('reorder-btn').textContent = '✕ Exit reorder';
+  } else {
+    cancelReorder();
+    return;
+  }
+  render();
+}
+
+function cancelReorder() {
+  if (reorderMode && reorderOriginal.length) {
+    /* Restore original order */
+    const map = {}; cases.forEach(c => map[c.id] = c);
+    cases = reorderOriginal.map(id => map[id]).filter(Boolean);
+  }
+  reorderMode = false; reorderOriginal = [];
+  g('reorder-panel').classList.remove('on');
+  g('reorder-btn').textContent = '⇅ Reorder';
+  render();
+}
+
+function saveReorder() {
+  /* Only update orderId based on current visual order — never touch dates/times */
+  cases.forEach((c, i) => { c.orderId = i + 1; });
+  reorderMode = false; reorderOriginal = [];
+  g('reorder-panel').classList.remove('on');
+  g('reorder-btn').textContent = '⇅ Reorder';
+  saveLocal(); push(); render();
+}
+
+function onDragStart(e, id) {
+  dragSrcId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.target.classList.add('dragging');
+}
+function onDragEnd(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.drag-over-top,.drag-over-bot').forEach(el => el.classList.remove('drag-over-top','drag-over-bot'));
+}
+function onDragOver(e, id) {
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  if (id === dragSrcId) return;
+  const row = e.currentTarget;
+  document.querySelectorAll('.drag-over-top,.drag-over-bot').forEach(el => el.classList.remove('drag-over-top','drag-over-bot'));
+  const rect = row.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) row.classList.add('drag-over-top'); else row.classList.add('drag-over-bot');
+}
+function onDrop(e, targetId) {
+  e.preventDefault();
+  if (!dragSrcId || dragSrcId === targetId) return;
+  const srcIdx = cases.findIndex(c => c.id === dragSrcId);
+  const tgtIdx = cases.findIndex(c => c.id === targetId);
+  if (srcIdx === -1 || tgtIdx === -1) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const insertBefore = e.clientY < rect.top + rect.height / 2;
+  const item = cases.splice(srcIdx, 1)[0];
+  const newTgtIdx = cases.findIndex(c => c.id === targetId);
+  cases.splice(insertBefore ? newTgtIdx : newTgtIdx + 1, 0, item);
+  render();
+}
+
+/* ══════════════ FILTERS / SORT ══════════════ */
+function liveSearch() { resetPage(); render(); }
+function clearF() {
+  ['sq','dFrom','dTo'].forEach(id => g(id).value = '');
+  g('fsf').value = 'All'; g('ftf').value = 'All'; g('fenv-f').value = 'All'; g('fsort').value = 'order-asc';
+  g('show-internal').checked = false;
+  resetPage(); render();
+}
+function isFiltered() {
+  return g('dFrom').value || g('dTo').value || g('fsf').value !== 'All' || g('ftf').value !== 'All' || g('fenv-f').value !== 'All' || g('sq').value;
+}
+function getF() {
+  const q = g('sq').value.toLowerCase(), fs = g('fsf').value, ft = g('ftf').value,
+    fe = g('fenv-f').value, fd = g('dFrom').value, td = g('dTo').value, sort = g('fsort').value;
+  let res = cases.filter(c => {
+    if (fs !== 'All' && c.status !== fs) return false;
+    if (ft !== 'All' && (c.type||'Positive') !== ft) return false;
+    if (fe !== 'All' && (c.env||'Staging') !== fe) return false;
+    if (fd && c.date < fd) return false;
+    if (td && c.date > td) return false;
+    if (q && !((c.testId||'')+(c.name||'')+(c.scenario||'')+(c.module||'')+c.input+c.expected+c.actual+c.notes).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if (!reorderMode) {
+    res.sort((a, b) => {
+      const oa = a.orderId || 9999999, ob = b.orderId || 9999999;
+      const da = (a.date||'')+(a.time||''), db = (b.date||'')+(b.time||'');
+      if (sort === 'order-asc') {
+        if (oa !== ob) return oa - ob;
+        return db.localeCompare(da);
+      } else if (sort === 'order-desc') {
+        if (oa !== ob) return ob - oa;
+        return db.localeCompare(da);
+      } else if (sort === 'date-asc') {
+        if (da !== db) return da.localeCompare(db);
+        return oa - ob;
+      } else { /* date-desc */
+        if (da !== db) return db.localeCompare(da);
+        return oa - ob;
+      }
+    });
+  }
+  return res;
+}
+
+/* ══════════════ PAGINATION ══════════════ */
+/* Location: JS section, before render() */
+function totalPages() {
+  if (!isFinite(itemsPerPage)) return 1;
+  return Math.max(1, Math.ceil(getF().length / itemsPerPage));
+}
+function gotoPage(p) {
+  currentPage = Math.max(1, Math.min(p, totalPages()));
+  render();
+  g('table-card').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function onPageSizeChange() {
+  const v = parseInt(g('page-size').value);
+  itemsPerPage = v > 0 ? v : Infinity; /* 0 = Show All */
+  currentPage = 1;
+  render();
+}
+function resetPage() { currentPage = 1; }
+
+function renderPagination(filteredLen) {
+  const showAll = !isFinite(itemsPerPage);
+  const tp = showAll ? 1 : Math.max(1, Math.ceil(filteredLen / itemsPerPage));
+  const start = showAll ? 1 : (currentPage - 1) * itemsPerPage + 1;
+  const end   = showAll ? filteredLen : Math.min(currentPage * itemsPerPage, filteredLen);
+  g('pag-info').textContent = filteredLen ? (showAll ? `All ${filteredLen}` : `${start}–${end} of ${filteredLen}`) : '0 results';
+  /* Hide nav buttons when showing all */
+  ['pag-first','pag-prev','pag-next','pag-last'].forEach(id => g(id).style.display = showAll ? 'none' : '');
+  g('pag-pages').innerHTML = '';
+  if (showAll) return;
+  g('pag-first').disabled = currentPage <= 1;
+  g('pag-prev').disabled  = currentPage <= 1;
+  g('pag-next').disabled  = currentPage >= tp;
+  g('pag-last').disabled  = currentPage >= tp;
+  const window_size = 5;
+  let lo = Math.max(1, currentPage - Math.floor(window_size/2));
+  let hi = Math.min(tp, lo + window_size - 1);
+  lo = Math.max(1, hi - window_size + 1);
+  for (let i = lo; i <= hi; i++) {
+    const b = document.createElement('button');
+    b.className = 'pag-btn' + (i === currentPage ? ' active' : '');
+    b.textContent = i;
+    b.onclick = (function(pg){ return () => gotoPage(pg); })(i);
+    g('pag-pages').appendChild(b);
+  }
+}
+
+/* ══════════════ RENDER ══════════════ */
+function buildHead(allChecked) {
+  g('thead').innerHTML = `<tr>
+    <th style="width:38px;text-align:center">${(reorderMode || currentRole==='view') ? '' : `<input type="checkbox" id="select-all" ${allChecked?'checked':''} onchange="toggleSelectAll(this)" title="Select all visible">`}</th>
+    <th data-col="datetime" style="width:90px;cursor:default">Date &amp; time<div class="resize-handle"></div></th>
+    <th data-col="testid" style="width:70px">Test ID<div class="resize-handle"></div></th>
+    <!-- NAME COLUMN: adjust width="30%" to change. td.name-cell in CSS controls truncation style. -->
+    <th data-col="name" style="width:30%;min-width:160px">Name<div class="resize-handle"></div></th>
+    <th data-col="scenario" style="width:10%">Scenario<div class="resize-handle"></div></th>
+    <th data-col="module" style="width:11%">Module<div class="resize-handle"></div></th>
+    <th data-col="priority" style="width:70px">Priority<div class="resize-handle"></div></th>
+    <th data-col="type" style="width:68px">Type<div class="resize-handle"></div></th>
+    <th data-col="status" style="width:72px">Status<div class="resize-handle"></div></th>
+    <th data-col="env" style="width:100px">Env<div class="resize-handle"></div></th>
+    <th data-col="input" style="width:20%">Input data<div class="resize-handle"></div></th>
+    <th data-col="expected" style="width:20%">Expected<div class="resize-handle"></div></th>
+    <th data-col="actual" style="width:20%">Actual<div class="resize-handle"></div></th>
+    <th data-col="notes" style="width:20%">Notes<div class="resize-handle"></div></th>
+    <th data-col="img" style="width:66px">Img</th>
+    <th data-col="actions" style="width:${reorderMode?'60px':'168px'}">Actions</th>
+  </tr>`;
+  initResizable();
+}
+
+function initResizable() {
+  document.querySelectorAll('#main-table th .resize-handle').forEach(handle => {
+    const th = handle.parentElement;
+    let startX, startW;
+    handle.addEventListener('mousedown', e => {
+      startX = e.clientX; startW = th.offsetWidth;
+      const onMove = e2 => { const w = Math.max(40, startW + (e2.clientX - startX)); th.style.width = w + 'px'; th.style.minWidth = w + 'px'; };
+      const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault(); e.stopPropagation();
+    });
+  });
+}
+
+function render() {
+  const f = getF(), total = cases.length, fTotal = f.length;
+  const filtered = isFiltered() && fTotal !== total;
+  const cnt = (arr, pred) => arr.filter(pred).length;
+  const fPass = cnt(f, c => c.status === 'Pass'), fFail = cnt(f, c => c.status === 'Fail'), fIt = cnt(f, c => c.status === 'In Test');
+  const fPos = cnt(f, c => (c.type||'Positive') === 'Positive'), fNeg = cnt(f, c => c.type === 'Negative'), fEv = cnt(f, c => c.img);
+  const tPass = cnt(cases, c => c.status === 'Pass'), tFail = cnt(cases, c => c.status === 'Fail'), tIt = cnt(cases, c => c.status === 'In Test');
+  const tPos = cnt(cases, c => (c.type||'Positive') === 'Positive'), tNeg = cnt(cases, c => c.type === 'Negative'), tEv = cnt(cases, c => c.img);
+  const rate = fTotal > 0 ? Math.round(fPass / fTotal * 100) : null;
+
+  function sm(mc, mv, ms, val, tot, filt) { g(mc).classList.toggle('filtered', filt); g(mv).textContent = val; g(ms).textContent = filt ? 'of '+tot+' total' : ''; }
+  sm('mc-total','m-t','m-t-sub',fTotal,total,filtered);
+  sm('mc-pass','m-p','m-p-sub',fPass,tPass,filtered);
+  sm('mc-fail','m-f','m-f-sub',fFail,tFail,filtered);
+  sm('mc-intest','m-it','m-it-sub',fIt,tIt,filtered);
+  sm('mc-pos','m-pos','m-pos-sub',fPos,tPos,filtered);
+  sm('mc-neg','m-neg','m-neg-sub',fNeg,tNeg,filtered);
+  sm('mc-ev','m-ev','m-ev-sub',fEv,tEv,filtered);
+  g('m-r').textContent = rate !== null ? rate + '%' : '—';
+  g('m-b').style.width = (rate || 0) + '%';
+
+  const fi = g('fi2');
+  if (filtered) { fi.style.display = 'block'; fi.textContent = `Showing ${fTotal} of ${total} cases — filters active`; } else fi.style.display = 'none';
+
+  g('export-btn').textContent = filtered ? '↓ Export filtered' : '↓ Export CSV';
+  g('table-count').textContent = fTotal + ' case' + (fTotal !== 1 ? 's' : '') + (filtered ? ' (filtered)' : '');
+
+  /* Clamp currentPage to valid range after filter changes */
+  const tp = Math.max(1, Math.ceil(fTotal / itemsPerPage));
+  if (currentPage > tp) currentPage = tp;
+
+  const allChecked = f.length > 0 && f.every(c => selectedIds.has(c.id));
+  buildHead(allChecked);
+
+  const tb = g('tb');
+  if (!f.length) {
+    tb.innerHTML = `<tr><td colspan="16" style="text-align:center;padding:3rem 1rem;color:var(--text2)">${total ? 'No cases match the current filters.' : 'No test cases yet. Add one above.'}</td></tr>`;
+    renderPagination(0);
+    return;
+  }
+
+  /* Slice for current page (Infinity = show all) */
+  const pageStart = isFinite(itemsPerPage) ? (currentPage - 1) * itemsPerPage : 0;
+  const pageRows  = isFinite(itemsPerPage) ? f.slice(pageStart, pageStart + itemsPerPage) : f;
+
+  tb.innerHTML = pageRows.map(c => {
+    const isE = editId === c.id, isSel = selectedIds.has(c.id);
+    const typ = c.type||'Positive', pri = c.priority||'Medium', env = c.env||'Staging';
+    const priCls = pri === 'High' ? 'bhi' : pri === 'Low' ? 'blo' : 'bmed';
+    const stCls = c.status === 'Pass' ? 'pass' : c.status === 'Fail' ? 'fail' : 'intest';
+    const envCls = env === 'Production' ? 'bprod' : 'bstag';
+    const thumb = c.img ? `<img class="thumb" src="${c.img}" onclick="openPP('${c.id}')" title="View full screenshot">` : `<span style="color:var(--text3);font-size:11px">—</span>`;
+    const trClass = isE ? 'hl' : isSel ? 'selected' : '';
+    const dragAttrs = reorderMode ? `draggable="true" ondragstart="onDragStart(event,'${c.id}')" ondragend="onDragEnd(event)" ondragover="onDragOver(event,'${c.id}')" ondrop="onDrop(event,'${c.id}')"` : '';
+    const firstCell = reorderMode
+      ? `<td style="text-align:center;overflow:visible;max-width:none"><span class="drag-handle" title="Drag to reorder">&#9776;</span></td>`
+      : currentRole === 'view'
+        ? `<td></td>`
+        : `<td style="text-align:center;overflow:visible;max-width:none"><input type="checkbox" class="row-cb" data-id="${c.id}" ${isSel?'checked':''} onchange="toggleSelect('${c.id}')"></td>`;
+    const showInternal = g('show-internal') && g('show-internal').checked;
+    /* orderId badge: shown only when "Show orderID" is checked */
+    const orderBadge = showInternal
+      ? `<span title="Internal orderId: ${c.orderId||'?'}" style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:#888;border-radius:3px;padding:1px 4px;margin-left:3px;vertical-align:middle;cursor:default">#${c.orderId||'?'}</span>`
+      : '';
+    return `<tr data-id="${c.id}" class="${trClass}" ${dragAttrs}>
+      ${firstCell}
+      <td class="dt-cell"><span style="font-size:12px">${fmt(c.date)}</span><br><span style="font-size:10px;color:var(--text2)">${c.time||'—'} UTC+7</span></td>
+      <td style="font-family:monospace;font-size:11px;color:var(--c-blue);font-weight:600;overflow:visible;max-width:none;cursor:pointer;white-space:nowrap" onclick="openDetail('${c.id}')" title="Click to view details">${esc(c.testId||'—')}${orderBadge}</td>
+      <td class="name-cell" title="${esc(c.name)}" style="font-weight:600">${esc(c.name)}</td>
+      <td title="${esc(c.scenario||'')}" style="color:var(--text2)">${esc(c.scenario||'—')}</td>
+      <td title="${esc(c.module||'')}">${esc(c.module||'—')}</td>
+      <td class="badge-cell"><span class="badge ${priCls}" style="font-size:10px">${esc(pri)}</span></td>
+      <td class="badge-cell"><span class="badge ${typ==='Positive'?'pos':'neg'}">${typ==='Positive'?'+Pos':'−Neg'}</span></td>
+      <td class="badge-cell"><span class="badge ${stCls}">${esc(c.status)}</span></td>
+      <td class="badge-cell"><span class="badge ${envCls}" style="font-size:10px">${esc(env)}</span></td>
+      <td title="${esc(c.input||'')}" style="color:var(--text2)">${esc(c.input||'—')}</td>
+      <td title="${esc(c.expected||'')}">${esc(c.expected||'—')}</td>
+      <td title="${esc(c.actual||'')}">${esc(c.actual||'—')}</td>
+      <td title="${esc(c.notes||'')}" style="color:var(--text2)">${esc(c.notes||'—')}</td>
+      <td>${thumb}</td>
+      <td class="act-cell">
+        ${reorderMode
+          ? '<span style="font-size:11px;color:var(--text3)">drag ↑↓</span>'
+          : currentRole === 'view'
+            ? '<span style="font-size:11px;color:var(--text3)">view only</span>'
+            : `<div class="act-group">
+          <button class="act act-r" onclick="retestCase('${c.id}')" title="New run with same setup">&#8635; Retest</button>
+          <button class="act act-e" onclick="editCase('${c.id}')" title="Edit">${isE?'&#9998;…':'&#9998; Edit'}</button>
+          <button class="act act-d" onclick="deleteCase('${c.id}')" title="Delete">&#10005;</button>
+        </div>`}
+      </td>
+    </tr>`;
+  }).join('');
+
+  renderPagination(fTotal);
+}
+
+/* ══════════════ CSV EXPORT ══════════════ */
+function buildCSV(data) {
+  const dt = u7dt();
+  const header = ['# QA Test Results', '# Exported: '+dt+' (UTC+7)', '# Total rows: '+data.length, ''];
+  const cols = ['Date','Time (UTC+7)','Test ID','Name','Scenario','Module','Priority','Type','Environment','Input Data','Expected','Actual','Status','Notes','Has Evidence'];
+  const rows = data.map(c => [fmt(c.date),c.time||'',c.testId||'',c.name,c.scenario||'',c.module,c.priority,c.type||'Positive',c.env||'Staging',c.input,c.expected,c.actual,c.status,c.notes,c.img?'Yes':'No'].map(v => '"'+(v||'').replace(/"/g,'""')+'"').join(','));
+  const t = data.length, p = data.filter(c => c.status === 'Pass').length, it = data.filter(c => c.status === 'In Test').length;
+  const summary = ['','"--- Summary ---"', `"Total","${t}"`,`"Pass","${p}"`,`"Fail","${t-p-it}"`,`"In Test","${it}"`,`"Pass rate","${t>0?Math.round(p/t*100):0}%"`,`"Exported at","${dt} UTC+7"`];
+  return header.join('\n') + cols.join(',') + '\n' + rows.join('\n') + '\n' + summary.join('\n');
+}
+function triggerCSV(data, suffix) {
+  if (!data.length) { alert('No data to export.'); return; }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([buildCSV(data)], {type:'text/csv'}));
+  a.download = 'qa_' + suffix + '_' + u7dt() + '.csv'; a.click();
+}
+function smartExport() {
+  const f = getF();
+  if (isFiltered() && f.length !== cases.length) triggerCSV(f, 'filtered'); else triggerCSV(cases, 'all');
+}
+
+/* ══════════════ CSV IMPORT ══════════════ */
+const CSV_COLS = ['Test ID','Name','Scenario','Module','Priority','Type','Environment','Input Data','Expected','Actual','Status','Notes'];
+function openImport() {
+  const sample = [CSV_COLS.join(','), 'TC0001,"Login with valid credentials","Happy path","Auth","High","Positive","Staging","user=admin pass=correct","Redirect to dashboard","Redirect to dashboard","Pass",""', 'TC0002,"Login with wrong password","Negative test","Auth","High","Negative","Staging","user=admin pass=wrong","Show error message","Error 403 shown","Pass","Tested on Chrome"'].join('\n');
+  g('csv-sample').textContent = sample;
+  g('import-result').style.display = 'none'; g('import-error').style.display = 'none';
+  g('csv-file-input').value = '';
+  g('import-overlay').classList.add('on'); /* openModal not used here since import-overlay has its own scroll */
+  document.body.style.overflow = 'hidden';
+}
+function downloadSampleCSV() {
+  const sample = [CSV_COLS.join(','), 'TC0001,"Login with valid credentials","Happy path","Auth","High","Positive","Staging","user=admin pass=correct","Redirect to dashboard","Redirect to dashboard","Pass",""', 'TC0002,"Login with wrong password","Negative test","Auth","High","Negative","Staging","user=admin pass=wrong","Show error message","Error 403 shown","Pass","Tested on Chrome"'].join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([sample], {type:'text/csv'})); a.download = 'qa_sample_import.csv'; a.click();
+}
+function parseCSVRow(line) {
+  const result = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+    else if (ch === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+    else cur += ch;
+  }
+  result.push(cur.trim()); return result;
+}
+function handleCSVImport(inp) {
+  const file = inp.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const lines = e.target.result.split(/\r?\n/).filter(l => l.trim() && !l.startsWith('#'));
+      if (lines.length < 2) { showImportError('CSV has no data rows.'); return; }
+      const headers = parseCSVRow(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9]/g,''));
+      const map = {testid:'testId',name:'name',scenario:'scenario',module:'module',priority:'priority',type:'type',environment:'env',inputdata:'input',expected:'expected',actual:'actual',status:'status',notes:'notes'};
+      const n = u7(); let added = 0;
+      const newCases = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const vals = parseCSVRow(lines[i]);
+        const obj = {id: Date.now()+'_'+i, date: n.date, time: n.time, img: null, imgName: null, priority:'Medium', type:'Positive', env:'Staging', status:'In Test', orderId: 0};
+        headers.forEach((h, idx) => { const field = map[h]; if (field) obj[field] = vals[idx] || ''; });
+        if (!obj.testId && !obj.name) continue;
+        newCases.push(obj); added++;
+      }
+      cases = [...newCases.reverse(), ...cases];
+      ensureOrderIds(); /* re-assign clean orderId sequence */
+      saveLocal(); push(); render();
+      g('import-result').textContent = `Successfully imported ${added} test case${added!==1?'s':''}.`;
+      g('import-result').style.display = 'block'; g('import-error').style.display = 'none';
+    } catch(err) { showImportError('Parse error: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+function showImportError(msg) { g('import-error').textContent = msg; g('import-error').style.display = 'block'; g('import-result').style.display = 'none'; }
+
+/* ══════════════ APP START (runs after login) ══════════════ */
+function appStart() {
+  loadLocal();
+  ensureOrderIds();
+  buildTCList();
+  const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
+  const now = new Date(Date.now() + 7*3600000);
+  g('tb-date').textContent = now.toLocaleDateString('en-GB', {weekday:'short',day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'}) + ' · UTC+7';
+  loadCdnConfig();
+  /* Admin: use saved cKey/cBin for full sync.
+     Viewer: sync is handled by viewerConnectCloud() — skip here to avoid overwriting viewer state. */
+  if (currentRole !== 'view' && cKey && cBin) {
+    syncBadge('syncing','Connecting…'); pull(false).then(() => startSync());
+  } else if (currentRole === 'view' && cKey && cBin) {
+    /* Viewer already connected via chooser — just pull once to refresh */
+    pull(false).then(() => {
+      if (syncTimer) clearInterval(syncTimer);
+      syncTimer = setInterval(() => pull(true), 30000);
+      syncBadge('ok','Viewer sync ✓');
+    });
+  }
+  render();
+}
+
+/* ══════════════ INIT (boot) ══════════════ */
+function init() {
+  const didAutoLogin = tryAutoLogin();
+  /* For admin auto-login, start the app immediately.
+     For viewer auto-login, tryAutoLogin shows the chooser — don't call appStart here. */
+  if (didAutoLogin && currentRole !== 'view') {
+    appStart();
+  }
+  /* Otherwise login screen stays visible — user must sign in manually. */
+}
+init();
+</script>
+</body>
+</html>
