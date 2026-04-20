@@ -156,9 +156,9 @@ code{font-size:11px;background:var(--bg2);border:1px solid var(--bd);border-radi
 .pp-toolbar button:hover{background:rgba(255,255,255,.25)}
 .pp-meta-txt{font-size:12px;color:rgba(255,255,255,.7);flex:1}
 .pp-zoom-info{font-size:12px;color:rgba(255,255,255,.8);min-width:50px;text-align:center}
-.pp-canvas{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:flex-start;cursor:grab;padding:20px;min-height:0}
+.pp-canvas{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;cursor:grab;padding:20px;min-height:0}
 .pp-canvas:active{cursor:grabbing}
-.pp-canvas img{display:block;transform-origin:top left;transition:transform .15s;max-width:none;user-select:none}
+.pp-canvas img{display:block;transform-origin:center center;transition:transform .15s;max-width:none;user-select:none}
 /* Screenshot thumbnail */
 .thumb{width:44px;height:30px;object-fit:cover;border-radius:5px;border:1px solid var(--bd2);cursor:pointer;display:block;transition:opacity .15s,transform .15s}
 .thumb:hover{opacity:.8;transform:scale(1.06)}
@@ -652,19 +652,42 @@ async function viewerConnectCloud() {
   const btn = g('vc-cloud-fields').querySelector('.bp');
   btn.textContent = 'Connecting…'; btn.disabled = true;
   try {
+    syncBadge('syncing', 'Fetching data…');
     const r = await fetch(`${JBIN}/b/${bin}/latest`, {headers:{'X-Master-Key': VIEWER_KEY}});
     if (!r.ok) throw new Error('Invalid Bin ID or access denied.');
+
+    /* Parse response immediately and use it — no second fetch needed */
+    const d = await r.json();
+    const remote = (d.record && d.record.cases) || [];
+
+    /* Set credentials */
     cKey = VIEWER_KEY; cBin = bin;
+
+    /* Populate cases from the already-fetched data */
+    cases = remote.map(rc => {
+      const remoteIsUrl = rc.img && rc.img.startsWith('http');
+      return {
+        ...rc,
+        img: remoteIsUrl ? rc.img : null,
+        imgName: rc.imgName || null
+      };
+    });
+    saveLocal();
+    ensureOrderIds();
+
+    /* Close the chooser and set up the UI */
     g('view-chooser').classList.remove('on');
     document.body.style.overflow = '';
-    appStart();
-    /* Start read-only auto-sync (pull only) */
+    appStartUI(); /* lightweight init — no load/pull */
+
+    /* Start 30-second auto-pull */
     if (syncTimer) clearInterval(syncTimer);
     syncTimer = setInterval(() => pull(true), 30000);
     syncBadge('ok', 'Viewer sync ✓');
   } catch(e) {
     errEl.textContent = String(e.message || e);
     errEl.style.display = 'block';
+    syncBadge('err', 'Connect failed');
   }
   btn.textContent = 'Connect & load'; btn.disabled = false;
 }
@@ -1003,7 +1026,16 @@ function openPP(id) {
   g('pp-meta').textContent = (c.testId||'') + (c.testId?' · ':'') + (c.name||'') + ' — ' + (c.imgName||'screenshot');
   g('pp-dl').href = c.img;
   g('pp-dl').download = (c.imgName || 'evidence_' + (c.testId||c.id));
-  ppZoomLevel = 1; applyZoom(); g('pp').classList.add('on'); document.body.style.overflow = 'hidden';
+  ppZoomLevel = 1;
+  g('pp').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  /* Wait for image to load so natural dimensions are available, then fit */
+  const img = g('pp-img');
+  if (img.complete && img.naturalWidth) {
+    ppZoomFit();
+  } else {
+    img.onload = () => ppZoomFit();
+  }
 }
 function closePP() { g('pp').classList.remove('on'); g('pp-img').src = ''; document.body.style.overflow = ''; }
 function handlePPClick(e) { if (e.target === g('pp') || e.target === g('pp-canvas')) closePP(); }
@@ -1016,7 +1048,10 @@ function ppZoomFit() {
   const canvas = g('pp-canvas'), img = g('pp-img');
   const scaleX = (canvas.clientWidth - 40) / (img.naturalWidth || canvas.clientWidth);
   const scaleY = (canvas.clientHeight - 40) / (img.naturalHeight || canvas.clientHeight);
-  ppZoomLevel = Math.min(scaleX, scaleY, 1); applyZoom();
+  ppZoomLevel = Math.min(scaleX, scaleY, 1);
+  applyZoom();
+  /* Re-center scroll after fitting */
+  canvas.scrollLeft = 0; canvas.scrollTop = 0;
 }
 function ppZoomReset() { ppZoomLevel = 1; applyZoom(); }
 function ppWheel(e) { e.preventDefault(); ppZoom(e.deltaY < 0 ? 0.15 : -0.15); }
@@ -1466,6 +1501,18 @@ function handleCSVImport(inp) {
 function showImportError(msg) { g('import-error').textContent = msg; g('import-error').style.display = 'block'; g('import-result').style.display = 'none'; }
 
 /* ══════════════ APP START (runs after login) ══════════════ */
+function appStartUI() {
+  /* Lightweight UI init — does NOT load local or pull from cloud.
+     Called by viewerConnectCloud which already has cases set. */
+  ensureOrderIds();
+  buildTCList();
+  const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
+  const now = new Date(Date.now() + 7*3600000);
+  g('tb-date').textContent = now.toLocaleDateString('en-GB', {weekday:'short',day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'}) + ' · UTC+7';
+  loadCdnConfig();
+  render();
+}
+
 function appStart() {
   loadLocal();
   ensureOrderIds();
@@ -1474,17 +1521,10 @@ function appStart() {
   const now = new Date(Date.now() + 7*3600000);
   g('tb-date').textContent = now.toLocaleDateString('en-GB', {weekday:'short',day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'}) + ' · UTC+7';
   loadCdnConfig();
-  /* Admin: use saved cKey/cBin for full sync.
-     Viewer: sync is handled by viewerConnectCloud() — skip here to avoid overwriting viewer state. */
+  /* Admin only: use saved cKey/cBin for full sync.
+     Viewer cloud sync is handled entirely by viewerConnectCloud — never pull here for viewer. */
   if (currentRole !== 'view' && cKey && cBin) {
     syncBadge('syncing','Connecting…'); pull(false).then(() => startSync());
-  } else if (currentRole === 'view' && cKey && cBin) {
-    /* Viewer already connected via chooser — just pull once to refresh */
-    pull(false).then(() => {
-      if (syncTimer) clearInterval(syncTimer);
-      syncTimer = setInterval(() => pull(true), 30000);
-      syncBadge('ok','Viewer sync ✓');
-    });
   }
   render();
 }
