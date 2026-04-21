@@ -1441,9 +1441,17 @@ function triggerCSV(data, suffix) {
   a.href = URL.createObjectURL(new Blob([buildCSV(data)], {type:'text/csv'}));
   a.download = 'qa_' + suffix + '_' + u7dt() + '.csv'; a.click();
 }
+  
+// function smartExport() {
+//   const f = getF();
+//   if (isFiltered() && f.length !== cases.length) triggerCSV(f, 'filtered'); else triggerCSV(cases, 'all');
+// }
+
 function smartExport() {
   const f = getF();
-  if (isFiltered() && f.length !== cases.length) triggerCSV(f, 'filtered'); else triggerCSV(cases, 'all');
+  /* Always export in the current sort order from getF().
+     Use 'filtered' suffix only when active filters reduce the result set. */
+  triggerCSV(f, (isFiltered() && f.length !== cases.length) ? 'filtered' : 'all');
 }
 
 /* ══════════════ CSV IMPORT ══════════════ */
