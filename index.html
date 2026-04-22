@@ -237,10 +237,12 @@ body.role-view #reorder-btn{display:none!important}
 <div class="view-chooser" id="view-chooser">
   <div class="vc-box">
     <div class="vc-title">Welcome, <span id="vc-username"></span></div>
-    <div class="vc-sub">Cloud sync is required for the viewer role. Enter your Bin ID below and connect.</div>
+    <div class="vc-sub">Cloud sync is required for the viewer role. Enter your Project URL and Anon Key to connect.</div>
     <div id="vc-cloud-fields" style="display:none;margin:0 0 10px;padding:10px 12px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r)">
-      <span class="lbl" style="margin-bottom:4px">Bin ID</span>
-      <input id="vc-bin-id" value="69df3320aaba882197feacf7" style="margin-bottom:8px">
+      <span class="lbl" style="margin-bottom:4px">Project URL</span>
+      <input id="vc-sb-url" placeholder="https://xxxxxxxxxxx.supabase.co" style="margin-bottom:8px">
+      <span class="lbl" style="margin-bottom:4px">Anon Key <span style="font-weight:400;color:var(--text3)">(provided by admin)</span></span>
+      <input id="vc-sb-anon" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…" style="margin-bottom:8px">
       <button class="bp" onclick="viewerConnectCloud()" style="width:100%;font-size:12px;padding:6px">Connect &amp; load</button>
       <div class="m-err" id="vc-err" style="margin-top:6px"></div>
     </div>
@@ -265,23 +267,37 @@ body.role-view #reorder-btn{display:none!important}
 
 <div class="wrap">
 
-<!-- Cloud modal -->
+<!-- Cloud modal — Supabase -->
 <div class="modal-bg" id="cfg-overlay">
   <div class="modal">
-    <div class="m-title">Cloud sync — JSONBin.io (free)</div>
-    <div class="m-sub">Share one bin so your whole team reads &amp; writes the same test cases in real time.</div>
-    <div class="step-row"><span class="step-num">1</span>Go to <strong>jsonbin.io</strong> → Sign up free → open Dashboard.</div>
-    <div class="step-row"><span class="step-num">2</span>Click <strong>API Keys</strong> → copy your <strong>Master Key</strong> (starts with <code>$2b$10$…</code>).</div>
-    <div class="step-row"><span class="step-num">3</span>Paste key → click <strong>Connect</strong>. A shared bin is auto-created.</div>
-    <div class="step-row"><span class="step-num">4</span>Share the <strong>Bin ID + Master Key</strong> with teammates.</div>
-    <div class="m-field"><span class="lbl">Master Key</span><input id="cfg-key" type="password" placeholder="$2b$10$…" autocomplete="off"></div>
-    <div class="m-field"><span class="lbl">Bin ID <span style="font-weight:400;color:var(--text3)">(blank = auto-create)</span></span><input id="cfg-bin" placeholder="e.g. 64a1b2c3d4e5f6a7b8c9d0e1"></div>
+    <div class="m-title">Cloud sync — Supabase (free)</div>
+    <div class="m-sub">Store test cases in your own Supabase project so the whole team shares the same data in real time.</div>
+    <div class="step-row"><span class="step-num">1</span>Sign up free at <strong>supabase.com</strong> → create a project.</div>
+    <div class="step-row"><span class="step-num">2</span>Open the <strong>SQL Editor</strong> and run the setup query below once to create the table.</div>
+    <div class="step-row"><span class="step-num">3</span>Go to <strong>Project Settings → API</strong> → copy the <strong>Project URL</strong>, <strong>anon key</strong>, and <strong>service_role key</strong>.</div>
+    <div class="step-row"><span class="step-num">4</span>Paste below and click <strong>Connect</strong>. Share the Project URL + anon key with viewers.</div>
+    <details style="margin-bottom:12px;font-size:12px">
+      <summary style="cursor:pointer;color:var(--c-blue);font-weight:600">&#9654; Show one-time SQL setup</summary>
+      <pre style="margin-top:8px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);font-size:11px;overflow-x:auto;white-space:pre">create table if not exists qa_tracker_data (
+  id integer primary key,
+  cases jsonb not null default '[]',
+  updated_at timestamptz default now()
+);
+insert into qa_tracker_data (id, cases)
+  values (1, '[]') on conflict (id) do nothing;
+alter table qa_tracker_data enable row level security;
+create policy "public_read" on qa_tracker_data
+  for select using (true);</pre>
+    </details>
+    <div class="m-field"><span class="lbl">Project URL</span><input id="cfg-url" placeholder="https://xxxxxxxxxxx.supabase.co" autocomplete="off"></div>
+    <div class="m-field"><span class="lbl">Service Role Key <span style="font-weight:400;color:var(--text3)">(admin write access)</span></span><input id="cfg-key" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…" autocomplete="off"></div>
+    <div class="m-field"><span class="lbl">Anon Key <span style="font-weight:400;color:var(--text3)">(share with viewers for read-only access)</span></span><input id="cfg-anon" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…" autocomplete="off"></div>
     <div class="m-err" id="cfg-err"></div>
     <div class="share-box" id="share-box">
-      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Share with teammates</div>
-      <div class="share-row"><span style="font-size:11px;color:var(--text2);width:68px;flex-shrink:0">Bin ID</span><span class="share-val" id="sh-bin"></span><button onclick="cp('sh-bin')" style="font-size:10px;padding:3px 8px">Copy</button></div>
-      <div class="share-row"><span style="font-size:11px;color:var(--text2);width:68px;flex-shrink:0">Master Key</span><span class="share-val" id="sh-key"></span><button onclick="cp('sh-key')" style="font-size:10px;padding:3px 8px">Copy</button></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:8px">&#9888; Keep the Master Key private.</div>
+      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Share with viewers (read-only)</div>
+      <div class="share-row"><span style="font-size:11px;color:var(--text2);width:90px;flex-shrink:0">Project URL</span><span class="share-val" id="sh-url"></span><button onclick="cp('sh-url')" style="font-size:10px;padding:3px 8px">Copy</button></div>
+      <div class="share-row"><span style="font-size:11px;color:var(--text2);width:90px;flex-shrink:0">Anon Key</span><span class="share-val" id="sh-anon"></span><button onclick="cp('sh-anon')" style="font-size:10px;padding:3px 8px">Copy</button></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">&#9888; Never share the Service Role Key — it has full database access.</div>
     </div>
     <div class="m-foot">
       <button onclick="disconnect()" class="bd-btn" style="font-size:11px;margin-right:auto">Disconnect</button>
@@ -527,7 +543,9 @@ body.role-view #reorder-btn{display:none!important}
 <script>
 /* ══════════════ STATE ══════════════ */
 let cases = [], editId = null, pImg = null, imgRemoved = false;
-let cKey = '', cBin = '', syncTimer = null;
+let sbUrl = '', sbKey = '', sbAnonKey = '', syncTimer = null; /* Supabase credentials */
+const SB_TABLE = 'qa_tracker_data';
+const SB_ROW_ID = 1;
 let selectedIds = new Set();
 let reorderMode = false, reorderOriginal = [];
 let detailOpenId = null;
@@ -539,7 +557,7 @@ let itemsPerPage = 10;
 let currentUser = null, currentRole = null;
 /* ── Cloudinary ── */
 let cdnCloud = '', cdnPreset = '';
-const JBIN = 'https://api.jsonbin.io/v3';
+/* Supabase REST helpers are in the STORAGE / SYNC section below */
 
 /* ══════════════ UTILS ══════════════ */
 function u7() { const d = new Date(Date.now() + 7*3600000); return {date: d.toISOString().slice(0,10), time: d.toISOString().slice(11,16)}; }
@@ -596,7 +614,7 @@ function doLogout() {
   sessionStorage.removeItem('qa_session_role');
   /* Disconnect viewer cloud sync if active */
   if (syncTimer) { clearInterval(syncTimer); syncTimer = null; }
-  cKey = ''; cBin = '';
+  sbUrl = ''; sbKey = ''; sbAnonKey = '';
   g('login-user').value = '';
   g('login-pass').value = '';
   g('login-err').style.display = 'none';
@@ -636,7 +654,7 @@ function tryAutoLogin() {
 }
 
 /* ── Viewer data-source chooser ── */
-const VIEWER_KEY = '$2a$10$mzKqbFbVVy9F.yvV5bttuOTZjKk3SoijTqA8BzPkNMlXNDREJIcM6';
+/* Viewer uses the shared anon key — read-only via Supabase RLS */
 
 function viewerChooseCloud() {
   /* Toggle bin-id input field */
@@ -645,40 +663,37 @@ function viewerChooseCloud() {
 }
 
 async function viewerConnectCloud() {
-  const bin = g('vc-bin-id').value.trim();
+  const url  = g('vc-sb-url').value.trim().replace(/\/$/, '');
+  const anon = g('vc-sb-anon').value.trim();
   const errEl = g('vc-err');
-  if (!bin) { errEl.textContent = 'Please enter a Bin ID.'; errEl.style.display = 'block'; return; }
+  if (!url || !anon) { errEl.textContent = 'Please enter both the Project URL and Anon Key.'; errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
   const btn = g('vc-cloud-fields').querySelector('.bp');
   btn.textContent = 'Connecting…'; btn.disabled = true;
   try {
     syncBadge('syncing', 'Fetching data…');
-    const r = await fetch(`${JBIN}/b/${bin}/latest`, {headers:{'X-Master-Key': VIEWER_KEY}});
-    if (!r.ok) throw new Error('Invalid Bin ID or access denied.');
-
-    /* Parse response immediately and use it — no second fetch needed */
-    const d = await r.json();
-    const remote = (d.record && d.record.cases) || [];
-
-    /* Set credentials */
-    cKey = VIEWER_KEY; cBin = bin;
-
-    /* Populate cases from the already-fetched data */
-    cases = remote.map(rc => {
-      const remoteIsUrl = rc.img && rc.img.startsWith('http');
-      return {
-        ...rc,
-        img: remoteIsUrl ? rc.img : null,
-        imgName: rc.imgName || null
-      };
+    const r = await fetch(`${url}/rest/v1/${SB_TABLE}?id=eq.${SB_ROW_ID}&select=cases`, {
+      headers: {'apikey': anon, 'Authorization': 'Bearer ' + anon}
     });
+    if (!r.ok) throw new Error('Invalid Project URL or Anon Key — check with your admin.');
+    const rows = await r.json();
+    const remote = (rows[0] && rows[0].cases) || [];
+
+    /* Set credentials (viewer uses anon key for both sbKey and sbAnonKey) */
+    sbUrl = url; sbKey = anon; sbAnonKey = anon;
+
+    /* Populate cases */
+    cases = remote.map(rc => ({
+      ...rc,
+      img: (rc.img && rc.img.startsWith('http')) ? rc.img : null,
+      imgName: rc.imgName || null
+    }));
     saveLocal();
     ensureOrderIds();
 
-    /* Close the chooser and set up the UI */
     g('view-chooser').classList.remove('on');
     document.body.style.overflow = '';
-    appStartUI(); /* lightweight init — no load/pull */
+    appStartUI();
 
     /* Start 30-second auto-pull */
     if (syncTimer) clearInterval(syncTimer);
@@ -693,7 +708,7 @@ async function viewerConnectCloud() {
 }
 
 function viewerChooseLocal() {
-  cKey = ''; cBin = '';
+  sbUrl = ''; sbKey = ''; sbAnonKey = '';
   g('view-chooser').classList.remove('on');
   document.body.style.overflow = '';
   appStart();
@@ -797,16 +812,18 @@ function addMinutes(dateStr, timeStr, delta) {
   return {date: nd.slice(0,10), time: nd.slice(11,16)};
 }
 
-/* ══════════════ STORAGE / SYNC ══════════════ */
+/* ══════════════ STORAGE / SYNC (Supabase) ══════════════ */
 function loadLocal() {
   try { cases = JSON.parse(localStorage.getItem('qa_cases') || '[]'); } catch(e) { cases = []; }
-  cKey = localStorage.getItem('qa_key') || '';
-  cBin = localStorage.getItem('qa_bin') || '';
+  sbUrl    = localStorage.getItem('qa_sb_url')    || '';
+  sbKey    = localStorage.getItem('qa_sb_key')    || '';
+  sbAnonKey = localStorage.getItem('qa_sb_anon') || '';
 }
 function saveLocal() { localStorage.setItem('qa_cases', JSON.stringify(cases)); }
+
+/* Strip base64 images from cloud payload — only keep Cloudinary URLs */
 function cloudPayload() {
   return cases.map(c => {
-    /* Include img if it's a Cloudinary URL (starts with http); strip if base64 */
     const isCdnUrl = c.img && c.img.startsWith('http');
     const {img, ...rest} = c;
     return isCdnUrl ? {...rest, img: c.img, imgName: c.imgName, hasImg: true}
@@ -814,50 +831,119 @@ function cloudPayload() {
   });
 }
 
-function syncBadge(state, msg) { const p = g('sync-pill'); p.className = 'sync-pill' + (state ? ' '+state : ''); g('sync-txt').textContent = msg; }
-async function push() {
-  if (!cKey || !cBin) return; syncBadge('syncing','Saving…');
-  try { const r = await fetch(`${JBIN}/b/${cBin}`, {method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':cKey,'X-Bin-Versioning':'false'},body:JSON.stringify({cases:cloudPayload()})}); if (!r.ok) throw new Error(r.status); syncBadge('ok','Synced ✓'); }
-  catch(e) { syncBadge('err','Sync error'); }
+/* Supabase REST helpers */
+function sbHeaders(key) {
+  return {'apikey': key, 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'};
 }
-async function pull(silent) {
-  if (!cKey || !cBin) return; if (!silent) syncBadge('syncing','Fetching…');
+function sbRestUrl(url) { return `${url}/rest/v1/${SB_TABLE}`; }
+
+function syncBadge(state, msg) { const p = g('sync-pill'); p.className = 'sync-pill' + (state ? ' '+state : ''); g('sync-txt').textContent = msg; }
+
+async function push() {
+  if (!sbUrl || !sbKey) return;
+  syncBadge('syncing', 'Saving…');
   try {
-    const r = await fetch(`${JBIN}/b/${cBin}/latest`, {headers:{'X-Master-Key':cKey}}); if (!r.ok) throw new Error(r.status);
-    const d = await r.json(); const remote = (d.record && d.record.cases) || [];
+    const r = await fetch(`${sbRestUrl(sbUrl)}?id=eq.${SB_ROW_ID}`, {
+      method: 'PATCH',
+      headers: sbHeaders(sbKey),
+      body: JSON.stringify({cases: cloudPayload(), updated_at: new Date().toISOString()})
+    });
+    if (!r.ok) throw new Error(r.status);
+    syncBadge('ok', 'Synced ✓');
+  } catch(e) { syncBadge('err', 'Sync error'); }
+}
+
+async function pull(silent) {
+  if (!sbUrl || !sbKey) return;
+  if (!silent) syncBadge('syncing', 'Fetching…');
+  try {
+    const r = await fetch(`${sbRestUrl(sbUrl)}?id=eq.${SB_ROW_ID}&select=cases`, {
+      headers: {'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey}
+    });
+    if (!r.ok) throw new Error(r.status);
+    const rows = await r.json();
+    const remote = (rows[0] && rows[0].cases) || [];
     const lmap = {}; cases.forEach(c => { lmap[c.id] = c; });
     cases = remote.map(rc => {
       const lc = lmap[rc.id];
-      /* If remote already has a Cloudinary URL, use it; otherwise fall back to local base64 */
       const remoteIsUrl = rc.img && rc.img.startsWith('http');
-      return {
-        ...rc,
-        img: remoteIsUrl ? rc.img : (lc ? lc.img||null : null),
-        imgName: rc.imgName || (lc ? lc.imgName||null : null)
-      };
+      return {...rc, img: remoteIsUrl ? rc.img : (lc ? lc.img||null : null), imgName: rc.imgName || (lc ? lc.imgName||null : null)};
     });
-    saveLocal(); render(); syncBadge('ok','Synced ✓');
-  } catch(e) { syncBadge('err','Fetch error'); }
+    saveLocal(); render(); syncBadge('ok', 'Synced ✓');
+  } catch(e) { syncBadge('err', 'Fetch error'); }
 }
-function startSync() { if (syncTimer) clearInterval(syncTimer); if (cKey && cBin) { syncTimer = setInterval(() => pull(true), 30000); syncBadge('ok','Cloud connected'); } }
 
-/* ══════════════ CLOUD SETTINGS ══════════════ */
-function openSettings() { g('cfg-key').value = cKey; g('cfg-bin').value = cBin; g('cfg-err').style.display = 'none'; updateShare(); openModal('cfg-overlay'); }
+async function initDbRow(url, key) {
+  /* Create row id=1 if it doesn't exist */
+  const check = await fetch(`${sbRestUrl(url)}?id=eq.${SB_ROW_ID}&select=id`, {headers: {'apikey': key, 'Authorization': 'Bearer ' + key}});
+  const rows = await check.json();
+  if (!rows || rows.length === 0) {
+    await fetch(sbRestUrl(url), {
+      method: 'POST',
+      headers: {...sbHeaders(key), 'Prefer': 'return=minimal'},
+      body: JSON.stringify({id: SB_ROW_ID, cases: []})
+    });
+  }
+}
+
+function startSync() {
+  if (syncTimer) clearInterval(syncTimer);
+  if (sbUrl && sbKey) { syncTimer = setInterval(() => pull(true), 30000); syncBadge('ok', 'Cloud connected'); }
+}
+
+/* ══════════════ CLOUD SETTINGS (Supabase) ══════════════ */
+function openSettings() {
+  g('cfg-url').value  = sbUrl;
+  g('cfg-key').value  = sbKey;
+  g('cfg-anon').value = sbAnonKey;
+  g('cfg-err').style.display = 'none';
+  updateShare();
+  openModal('cfg-overlay');
+}
 function closeSettings() { closeModal('cfg-overlay'); }
-function updateShare() { const b = g('share-box'); if (cBin && cKey) { g('sh-bin').textContent = cBin; g('sh-key').textContent = cKey; b.style.display = 'block'; } else b.style.display = 'none'; }
+function updateShare() {
+  const b = g('share-box');
+  if (sbUrl && sbAnonKey) {
+    g('sh-url').textContent  = sbUrl;
+    g('sh-anon').textContent = sbAnonKey;
+    b.style.display = 'block';
+  } else { b.style.display = 'none'; }
+}
+
 async function connect() {
-  const key = g('cfg-key').value.trim(), bin = g('cfg-bin').value.trim(), errEl = g('cfg-err'), btn = g('cfg-btn');
-  if (!key) { errEl.textContent = 'Please enter your Master Key.'; errEl.style.display = 'block'; return; }
+  const url   = g('cfg-url').value.trim().replace(/\/$/, '');
+  const key   = g('cfg-key').value.trim();
+  const anon  = g('cfg-anon').value.trim();
+  const errEl = g('cfg-err'), btn = g('cfg-btn');
+  if (!url || !key) { errEl.textContent = 'Project URL and Service Role Key are required.'; errEl.style.display = 'block'; return; }
   btn.textContent = 'Connecting…'; btn.disabled = true; errEl.style.display = 'none';
   try {
-    let fb = bin;
-    if (!fb) { const r = await fetch(`${JBIN}/b`,{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':key,'X-Bin-Name':'qa-tracker','X-Bin-Private':'true','X-Bin-Versioning':'false'},body:JSON.stringify({cases:cloudPayload()})}); if (!r.ok) { const e = await r.json(); throw new Error(e.message||r.status); } fb = (await r.json()).metadata.id; }
-    else { const r = await fetch(`${JBIN}/b/${fb}/latest`, {headers:{'X-Master-Key':key}}); if (!r.ok) { const e = await r.json(); throw new Error(e.message||r.status); } }
-    cKey = key; cBin = fb; localStorage.setItem('qa_key', cKey); localStorage.setItem('qa_bin', cBin);
-    updateShare(); await pull(false); await push(); startSync(); btn.textContent = 'Connect'; btn.disabled = false; closeModal('cfg-overlay');
+    /* Verify connection by reading the table */
+    const r = await fetch(`${sbRestUrl(url)}?id=eq.${SB_ROW_ID}&select=id`, {headers: {'apikey': key, 'Authorization': 'Bearer ' + key}});
+    if (!r.ok) { const e = await r.json(); throw new Error(e.message || e.hint || r.status); }
+    /* Create row if table is empty */
+    await initDbRow(url, key);
+    /* Save credentials */
+    sbUrl = url; sbKey = key; sbAnonKey = anon;
+    localStorage.setItem('qa_sb_url', sbUrl);
+    localStorage.setItem('qa_sb_key', sbKey);
+    localStorage.setItem('qa_sb_anon', sbAnonKey);
+    updateShare();
+    await pull(false);
+    await push();
+    startSync();
+    btn.textContent = 'Connect'; btn.disabled = false;
+    closeModal('cfg-overlay');
   } catch(e) { errEl.textContent = 'Connection failed: ' + e.message; errEl.style.display = 'block'; btn.textContent = 'Connect'; btn.disabled = false; }
 }
-function disconnect() { cKey = ''; cBin = ''; localStorage.removeItem('qa_key'); localStorage.removeItem('qa_bin'); if (syncTimer) clearInterval(syncTimer); syncBadge('','Local only'); closeModal('cfg-overlay'); }
+
+function disconnect() {
+  sbUrl = ''; sbKey = ''; sbAnonKey = '';
+  ['qa_sb_url','qa_sb_key','qa_sb_anon'].forEach(k => localStorage.removeItem(k));
+  if (syncTimer) clearInterval(syncTimer);
+  syncBadge('', 'Local only');
+  closeModal('cfg-overlay');
+}
 
 /* ══════════════ IMAGE HANDLING ══════════════ */
 function storeImgLocal(file) {
@@ -1441,12 +1527,6 @@ function triggerCSV(data, suffix) {
   a.href = URL.createObjectURL(new Blob([buildCSV(data)], {type:'text/csv'}));
   a.download = 'qa_' + suffix + '_' + u7dt() + '.csv'; a.click();
 }
-  
-// function smartExport() {
-//   const f = getF();
-//   if (isFiltered() && f.length !== cases.length) triggerCSV(f, 'filtered'); else triggerCSV(cases, 'all');
-// }
-
 function smartExport() {
   const f = getF();
   /* Always export in the current sort order from getF().
@@ -1529,9 +1609,9 @@ function appStart() {
   const now = new Date(Date.now() + 7*3600000);
   g('tb-date').textContent = now.toLocaleDateString('en-GB', {weekday:'short',day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'}) + ' · UTC+7';
   loadCdnConfig();
-  /* Admin only: use saved cKey/cBin for full sync.
-     Viewer cloud sync is handled entirely by viewerConnectCloud — never pull here for viewer. */
-  if (currentRole !== 'view' && cKey && cBin) {
+  /* Admin only: use saved sbUrl/sbKey for full sync.
+     Viewer cloud sync is handled entirely by viewerConnectCloud. */
+  if (currentRole !== 'view' && sbUrl && sbKey) {
     syncBadge('syncing','Connecting…'); pull(false).then(() => startSync());
   }
   render();
