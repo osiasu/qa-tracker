@@ -1407,10 +1407,10 @@ function openDetail(id) {
       <div class="dm-total-row">
         <div style="min-width:0">
           <div class="dm-total-lbl">Actual Result</div>
-          ${c.notes ? `<div class="dm-total-sub">Catatan: ${esc(c.notes)}</div>` : ''}
-        </div>
-        <span class="dm-total-val ${stCls === 'pass' ? 'green' : stCls === 'fail' ? 'red' : ''}">${esc(c.actual||'—')}</span>
-      </div>
+          </div>
+          <span class="dm-total-val clamp2 ${stCls === 'pass' ? 'green' : stCls === 'fail' ? 'red' : ''}" title="${esc(c.actual||'')}">${esc(c.actual||'—')}</span><!-- ← clamp2 + title added -->
+          </div>
+          ${c.notes ? `<div class="dm-total-sub clamp2" title="${esc(c.notes)}">Catatan: ${esc(c.notes)}</div>` : ''}<!-- ← clamp2 + title added -->
     </div>
 
     <!-- Screenshot (if any) -->
