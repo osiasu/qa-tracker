@@ -171,29 +171,29 @@ code{font-size:11px;background:var(--bg2);border:1px solid var(--bd);border-radi
 /* Receipt-style detail modal */
 .dm-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
 .dm-icon{width:42px;height:42px;border-radius:10px;background:var(--bg-danger);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.dm-title{font-size:16px;font-weight:700;flex:1}
+.dm-title{font-size:16px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dm-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;padding:0}
 .dm-close:hover{background:var(--bg3)}
-.dm-section{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px}
+.dm-section{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px;overflow:hidden}
 .dm-section-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px}
-.dm-status-row{display:flex;align-items:center;justify-content:space-between}
-.dm-status-lbl{font-size:13px;color:var(--text2)}
+.dm-status-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dm-status-lbl{font-size:13px;color:var(--text2);flex-shrink:0}
 .dm-item-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--bd)}
 .dm-item-row:first-child{border-top:none;padding-top:0}
 .dm-qty{background:var(--bg-danger);color:var(--c-danger);border:1px solid #f09595;border-radius:6px;font-size:11px;font-weight:700;padding:2px 7px;flex-shrink:0;align-self:center}
-.dm-item-body{flex:1;min-width:0}
-.dm-item-name{font-size:13px;font-weight:600;color:var(--text)}
-.dm-item-note{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5}
-.dm-item-val{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap}
-.dm-pay-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0}
-.dm-pay-lbl{color:var(--text2)}
-.dm-pay-val{font-weight:500;color:var(--text)}
+.dm-item-body{flex:1;min-width:0;overflow:hidden}
+.dm-item-name{font-size:13px;font-weight:600;color:var(--text);word-break:break-word;overflow-wrap:anywhere}
+.dm-item-note{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5;word-break:break-word;overflow-wrap:anywhere}
+.dm-item-val{font-size:13px;font-weight:600;color:var(--text);flex-shrink:0}
+.dm-pay-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-size:12px;padding:4px 0}
+.dm-pay-lbl{color:var(--text2);flex-shrink:0;min-width:90px}
+.dm-pay-val{font-weight:500;color:var(--text);word-break:break-word;overflow-wrap:anywhere;text-align:right}
 .dm-pay-val.green{color:var(--c-success);font-weight:600}
 .dm-pay-val.red{color:var(--c-danger);font-weight:700}
-.dm-total-row{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:4px;border-top:1px solid var(--bd)}
+.dm-total-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-top:12px;margin-top:4px;border-top:1px solid var(--bd)}
 .dm-total-lbl{font-size:13px;font-weight:600;color:var(--text)}
-.dm-total-sub{font-size:11px;color:var(--text3)}
-.dm-total-val{font-size:16px;font-weight:700}
+.dm-total-sub{font-size:11px;color:var(--text3);word-break:break-word;overflow-wrap:anywhere;margin-top:2px}
+.dm-total-val{font-size:13px;font-weight:700;word-break:break-word;overflow-wrap:anywhere;text-align:right;max-width:65%}
 .dm-total-val.green{color:var(--c-success)}
 .dm-total-val.red{color:var(--c-danger)}
 .dm-env-tag{font-size:10px;font-weight:600;padding:1px 7px;border-radius:4px;border:1px solid;margin-left:6px;vertical-align:middle}
@@ -1396,20 +1396,20 @@ function openDetail(id) {
     <!-- Test Steps -->
     <div class="dm-section">
       <div class="dm-section-title">Rincian Pengujian</div>
-      <div class="dm-pay-row" style="align-items:flex-start;padding:6px 0">
-        <span class="dm-pay-lbl" style="flex-shrink:0;min-width:110px">Input Data</span>
-        <span class="dm-pay-val" style="text-align:right;color:var(--text2)">${esc(c.input||'—')}</span>
+      <div class="dm-pay-row" style="padding:6px 0">
+        <span class="dm-pay-lbl">Input Data</span>
+        <span class="dm-pay-val" style="color:var(--text2)">${esc(c.input||'—')}</span>
       </div>
-      <div class="dm-pay-row" style="align-items:flex-start;padding:6px 0;border-top:1px solid var(--bd)">
-        <span class="dm-pay-lbl" style="flex-shrink:0;min-width:110px">Expected</span>
-        <span class="dm-pay-val" style="text-align:right">${esc(c.expected||'—')}</span>
+      <div class="dm-pay-row" style="padding:6px 0;border-top:1px solid var(--bd)">
+        <span class="dm-pay-lbl">Expected</span>
+        <span class="dm-pay-val">${esc(c.expected||'—')}</span>
       </div>
       <div class="dm-total-row">
-        <div>
+        <div style="min-width:0">
           <div class="dm-total-lbl">Actual Result</div>
           ${c.notes ? `<div class="dm-total-sub">Catatan: ${esc(c.notes)}</div>` : ''}
         </div>
-        <span class="dm-total-val ${stCls === 'pass' ? 'green' : stCls === 'fail' ? 'red' : ''}" style="font-size:13px;max-width:55%;text-align:right">${esc(c.actual||'—')}</span>
+        <span class="dm-total-val ${stCls === 'pass' ? 'green' : stCls === 'fail' ? 'red' : ''}">${esc(c.actual||'—')}</span>
       </div>
     </div>
 
