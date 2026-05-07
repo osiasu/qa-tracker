@@ -11,7 +11,16 @@
   --text:#1c1c1a;--text2:#6b6b67;--text3:#a0a09c;
   --c-info:#0c447c;--c-danger:#a32d2d;--c-warn:#633806;--c-success:#3b6d11;--c-blue:#185fa5;
   --bd:rgba(0,0,0,.11);--bd2:rgba(0,0,0,.19);--r:8px;--rl:12px;
+  --dm-transition: background .2s,color .2s,border-color .2s;
 }
+body.dark{
+  --bg:#18181b;--bg2:#1f1f23;--bg3:#111114;
+  --bg-info:#0d1f33;--bg-danger:#2a0f0f;--bg-warn:#231500;--bg-success:#0d1f03;
+  --text:#e4e4e1;--text2:#9a9a96;--text3:#5a5a56;
+  --c-info:#5da3e8;--c-danger:#e07272;--c-warn:#e0a040;--c-success:#82c930;--c-blue:#4d95d8;
+  --bd:rgba(255,255,255,.09);--bd2:rgba(255,255,255,.16);
+}
+body,body *{transition:var(--dm-transition)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:14px}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh}
@@ -68,11 +77,21 @@ button:active{transform:scale(.97)}
 .form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .form-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text2)}
 .form-acts{display:flex;gap:6px}
-/* Row 1: Test ID(140px) · Name(1fr) · Scenario(1fr) · Module(1fr) · Priority(95px) · Type(95px) · Env(120px) */
-.g-form1{display:grid;grid-template-columns:140px 1fr 1fr 1fr 95px 95px 120px;gap:10px;margin-bottom:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
-.gbot{display:grid;grid-template-columns:1fr 95px 105px 90px 170px;gap:10px;align-items:end}
-.divider{height:1px;background:var(--bd);margin:12px -1.25rem 12px}
+/* Form modal grids */
+.fm-g1{display:grid;grid-template-columns:130px 1fr 1fr 1fr 90px 90px 110px;gap:10px;margin-bottom:10px}
+.fm-g2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.fm-gbot{display:grid;grid-template-columns:1fr 95px 110px 90px;gap:10px;align-items:end;margin-bottom:10px}
+.fm-header{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
+.fm-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.fm-icon.add{background:var(--bg-success)}
+.fm-icon.edit{background:var(--bg-info)}
+.fm-icon.retest{background:var(--bg-warn)}
+.fm-title{font-size:16px;font-weight:700;flex:1}
+.fm-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;padding:0}
+.fm-close:hover{background:var(--bg3)}
+.fm-section{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-bottom:10px}
+.fm-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:10px}
+@media(max-width:860px){.fm-g1{grid-template-columns:1fr 1fr 1fr}.fm-gbot{grid-template-columns:1fr 1fr}}
 .img-row{display:none;align-items:center;gap:10px;margin-top:9px;padding:8px 10px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--bd)}
 .upzone{border:1.5px dashed var(--bd2);border-radius:var(--r);padding:9px 10px;text-align:center;cursor:pointer;color:var(--text2);font-size:11px;background:var(--bg2);position:relative;transition:border-color .15s}
 .upzone:hover{border-color:var(--c-blue);color:var(--c-blue)}
@@ -120,11 +139,12 @@ tr.drag-over-bot td{border-bottom:2px solid var(--c-blue)!important}
 .bulk-bar{display:none;align-items:center;gap:8px;padding:8px 12px;background:#e8f2fd;border:1px solid #85b7eb;border-radius:var(--r);margin-bottom:8px;flex-wrap:wrap}
 .bulk-bar.on{display:flex}
 .bulk-count{font-size:12px;font-weight:600;color:var(--c-info)}
-/* Modals — fixed overlay so they appear without page scrolling */
-.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto}
+/* Modals — centered, backdrop does NOT close modal on click */
+.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:2rem;overflow-y:auto}
 .modal-bg.on{display:flex}
-.modal{background:var(--bg);border-radius:var(--rl);border:1px solid var(--bd);padding:1.5rem;width:100%;max-width:560px}
+.modal{background:var(--bg);border-radius:var(--rl);border:1px solid var(--bd);padding:1.5rem;width:100%;max-width:560px;position:relative}
 .modal.wide{max-width:780px}
+.modal.form-modal{max-width:880px}
 .m-title{font-size:14px;font-weight:600;margin-bottom:4px}
 .m-sub{font-size:12px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6}
 .m-field{margin-bottom:12px}
@@ -148,6 +168,35 @@ code{font-size:11px;background:var(--bg2);border:1px solid var(--bd);border-radi
 .detail-val.mono{font-family:monospace;font-size:12px;color:var(--c-blue);font-weight:600}
 .detail-full{grid-column:1/-1}
 .detail-sep{grid-column:1/-1;height:1px;background:var(--bd);margin:4px 0}
+/* Receipt-style detail modal */
+.dm-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.dm-icon{width:42px;height:42px;border-radius:10px;background:var(--bg-danger);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.dm-title{font-size:16px;font-weight:700;flex:1}
+.dm-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;padding:0}
+.dm-close:hover{background:var(--bg3)}
+.dm-section{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px}
+.dm-section-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px}
+.dm-status-row{display:flex;align-items:center;justify-content:space-between}
+.dm-status-lbl{font-size:13px;color:var(--text2)}
+.dm-item-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--bd)}
+.dm-item-row:first-child{border-top:none;padding-top:0}
+.dm-qty{background:var(--bg-danger);color:var(--c-danger);border:1px solid #f09595;border-radius:6px;font-size:11px;font-weight:700;padding:2px 7px;flex-shrink:0;align-self:center}
+.dm-item-body{flex:1;min-width:0}
+.dm-item-name{font-size:13px;font-weight:600;color:var(--text)}
+.dm-item-note{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5}
+.dm-item-val{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap}
+.dm-pay-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0}
+.dm-pay-lbl{color:var(--text2)}
+.dm-pay-val{font-weight:500;color:var(--text)}
+.dm-pay-val.green{color:var(--c-success);font-weight:600}
+.dm-pay-val.red{color:var(--c-danger);font-weight:700}
+.dm-total-row{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:4px;border-top:1px solid var(--bd)}
+.dm-total-lbl{font-size:13px;font-weight:600;color:var(--text)}
+.dm-total-sub{font-size:11px;color:var(--text3)}
+.dm-total-val{font-size:16px;font-weight:700}
+.dm-total-val.green{color:var(--c-success)}
+.dm-total-val.red{color:var(--c-danger)}
+.dm-env-tag{font-size:10px;font-weight:600;padding:1px 7px;border-radius:4px;border:1px solid;margin-left:6px;vertical-align:middle}
 /* Image preview with zoom */
 .pp{background:rgba(0,0,0,.85);display:none;flex-direction:column;position:fixed;inset:0;z-index:1000;padding:0}
 .pp.on{display:flex}
@@ -180,26 +229,46 @@ body.role-view [data-admin-only]{display:none!important}
 /* Viewer restrictions */
 body.role-view #cdn-pill{display:none!important}
 body.role-view #reorder-btn{display:none!important}
-/* View mode chooser dialog (shown after viewer login) */
-.view-chooser{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center}
+/* Select Data modal (shown after login for all roles) */
+.view-chooser{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:1.5rem}
 .view-chooser.on{display:flex}
-.vc-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);padding:2rem;width:100%;max-width:400px}
-.vc-title{font-size:15px;font-weight:600;margin-bottom:6px}
-.vc-sub{font-size:12px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6}
-.vc-opt{width:100%;padding:12px 14px;font-size:13px;margin-bottom:8px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg2);cursor:pointer;text-align:left;font-family:inherit;font-weight:500;transition:background .12s;display:block}
-.vc-opt:hover{background:var(--bg3)}
-.vc-opt.hl{background:var(--bg-info);color:var(--c-info);border-color:#85b7eb}
-.vc-opt.hl:hover{background:#b5d4f4}
-/* Cloudinary badge in topbar */
-.cdn-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);white-space:nowrap;cursor:pointer}
-.cdn-pill.on{color:var(--c-success);border-color:#97c459;background:var(--bg-success)}
-.cdn-pill.off{color:var(--c-warn);border-color:#ef9f27;background:var(--bg-warn)}
+.vc-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);padding:2rem;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column}
+.vc-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.vc-sub{font-size:12px;color:var(--text2);margin-bottom:1rem;line-height:1.6}
+/* Search input inside chooser */
+.vc-search-wrap{position:relative;margin-bottom:1rem}
+.vc-search-wrap input{width:100%;padding:9px 12px 9px 36px;border-radius:var(--rl);border:1px solid var(--bd2);background:var(--bg2);font-size:13px;color:var(--text);outline:none}
+.vc-search-wrap input:focus{border-color:#378add;box-shadow:0 0 0 3px rgba(55,138,221,.15)}
+.vc-search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+/* Scrollable list */
+.vc-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.vc-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--bd);border-radius:var(--rl);background:var(--bg);cursor:pointer;transition:background .12s,border-color .12s;text-align:left;width:100%}
+.vc-item:hover{background:var(--bg2);border-color:var(--bd2)}
+.vc-item-icon{width:38px;height:38px;border-radius:10px;background:var(--bg-success);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:var(--c-success)}
+.vc-item-body{flex:1;min-width:0}
+.vc-item-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-item-desc{font-size:11px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-item-arrow{color:var(--text3);font-size:14px;flex-shrink:0}
+.vc-empty{text-align:center;color:var(--text3);font-size:12px;padding:2rem 0}
+.vc-loading{text-align:center;color:var(--text2);font-size:12px;padding:2rem 0}
+.vc-err-box{font-size:12px;color:var(--c-danger);background:var(--bg-danger);border:1px solid #f09595;border-radius:var(--r);padding:8px 12px;margin-top:10px;display:none}
+/* Cloudinary badge in topbar — hidden from UI, but kept functional */
+.cdn-pill{display:none!important}
+/* Dark mode toggle */
+.dm-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);cursor:pointer;font-size:14px;padding:0;flex-shrink:0;transition:background .15s,border-color .15s}
+.dm-btn:hover{background:var(--bg3);border-color:var(--bd2)}
+/* Manual refresh button */
+.refresh-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);cursor:pointer;font-size:14px;padding:0;flex-shrink:0;transition:background .15s,transform .3s}
+.refresh-btn:hover{background:var(--bg3)}
+.refresh-btn.spinning{animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 /* User pill */
 .user-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg2)}
 .user-pill .role-tag{font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:var(--c-blue);color:#fff}
 .user-pill .role-tag.view{background:#854F0B}
-.goto-btn{position:fixed;right:1.25rem;width:36px;height:36px;border-radius:50%;background:var(--c-blue);color:#fff;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:400;opacity:.85;transition:opacity .15s,transform .15s;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.goto-btn:hover{opacity:1;transform:scale(1.08)}
+/* Scroll buttons — opacity: 0.35 base, 0.7 on hover (edit these two values to adjust) */
+.goto-btn{position:fixed;right:1.25rem;width:36px;height:36px;border-radius:50%;background:var(--c-blue);color:#fff;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:400;opacity:.35;transition:opacity .15s,transform .15s;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.goto-btn:hover{opacity:.7;transform:scale(1.08)}
 #goto-top{bottom:4.5rem}
 #goto-bot{bottom:1rem}
 /* Pagination */
@@ -233,19 +302,19 @@ body.role-view #reorder-btn{display:none!important}
   </div>
 </div>
 
-<!-- Viewer: data-source chooser (shown after viewer login) -->
+<!-- Select Data modal (shown after login for all roles) -->
 <div class="view-chooser" id="view-chooser">
   <div class="vc-box">
-    <div class="vc-title">Welcome, <span id="vc-username"></span></div>
-    <div class="vc-sub">Cloud sync is required for the viewer role. Enter your Project URL and Anon Key to connect.</div>
-    <div id="vc-cloud-fields" style="display:none;margin:0 0 10px;padding:10px 12px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r)">
-      <span class="lbl" style="margin-bottom:4px">Project URL</span>
-      <input id="vc-sb-url" placeholder="https://xxxxxxxxxxx.supabase.co" style="margin-bottom:8px">
-      <span class="lbl" style="margin-bottom:4px">Anon Key <span style="font-weight:400;color:var(--text3)">(provided by admin)</span></span>
-      <input id="vc-sb-anon" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…" style="margin-bottom:8px">
-      <button class="bp" onclick="viewerConnectCloud()" style="width:100%;font-size:12px;padding:6px">Connect &amp; load</button>
-      <div class="m-err" id="vc-err" style="margin-top:6px"></div>
+    <div class="vc-title">Select Data</div>
+    <div class="vc-sub">Choose data to continue</div>
+    <div class="vc-search-wrap">
+      <span class="vc-search-icon">🔍</span>
+      <input id="vc-search" placeholder="Search by name or description…" oninput="filterVcList()" autocomplete="off">
     </div>
+    <div class="vc-list" id="vc-list">
+      <div class="vc-loading" id="vc-loading">Connecting to database…</div>
+    </div>
+    <div class="vc-err-box" id="vc-err"></div>
   </div>
 </div>
 
@@ -258,10 +327,13 @@ body.role-view #reorder-btn{display:none!important}
     <span class="role-tag" id="user-role-tag">—</span>
   </span>
   <span class="sync-pill" id="sync-pill"><span class="sync-dot"></span><span id="sync-txt">Local only</span></span>
+  <button class="refresh-btn" id="refresh-btn" onclick="manualRefresh()" title="Refresh data from cloud">↻</button>
+  <button onclick="switchDataset()" id="switch-dataset-btn" style="font-size:11px;padding:4px 10px;display:none" title="Switch to a different dataset">🗂️ Switch data</button>
   <span class="cdn-pill off" id="cdn-pill" onclick="openCdnModal()" title="Cloudinary image storage">&#9729; Cloudinary</span>
-  <button onclick="openSettings()" style="font-size:11px;padding:4px 10px" data-admin-only>&#9881; Cloud sync</button>
+  <button onclick="openSettings()" style="display:none;font-size:11px;padding:4px 10px" data-admin-only id="cloud-sync-btn">&#9881; Cloud sync</button>
   <button onclick="openImport()" style="font-size:11px;padding:4px 10px" data-admin-only>&#8593; Import CSV</button>
   <button onclick="smartExport()" style="font-size:11px;padding:4px 10px" id="export-btn">&#8595; Export CSV</button>
+  <button class="dm-btn" id="dm-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
   <button onclick="doLogout()" style="font-size:11px;padding:4px 10px;color:var(--text2)">Sign out</button>
 </div>
 
@@ -269,7 +341,7 @@ body.role-view #reorder-btn{display:none!important}
 
 <!-- Cloud modal — Supabase -->
 <div class="modal-bg" id="cfg-overlay">
-  <div class="modal">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="m-title">Cloud sync — Supabase (free)</div>
     <div class="m-sub">Store test cases in your own Supabase project so the whole team shares the same data in real time.</div>
     <div class="step-row"><span class="step-num">1</span>Sign up free at <strong>supabase.com</strong> → create a project.</div>
@@ -279,12 +351,15 @@ body.role-view #reorder-btn{display:none!important}
     <details style="margin-bottom:12px;font-size:12px">
       <summary style="cursor:pointer;color:var(--c-blue);font-weight:600">&#9654; Show one-time SQL setup</summary>
       <pre style="margin-top:8px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);font-size:11px;overflow-x:auto;white-space:pre">create table if not exists qa_tracker_data (
-  id integer primary key,
+  id serial primary key,
+  name text not null default 'Unnamed',
+  description text default '',
   cases jsonb not null default '[]',
   updated_at timestamptz default now()
 );
-insert into qa_tracker_data (id, cases)
-  values (1, '[]') on conflict (id) do nothing;
+insert into qa_tracker_data (name, description, cases)
+  values ('My QA Tracker', 'Default dataset', '[]')
+  on conflict do nothing;
 alter table qa_tracker_data enable row level security;
 create policy "public_read" on qa_tracker_data
   for select using (true);</pre>
@@ -309,7 +384,7 @@ create policy "public_read" on qa_tracker_data
 
 <!-- Bulk Edit modal -->
 <div class="modal-bg" id="be-overlay">
-  <div class="modal">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="m-title">Bulk edit — <span id="be-count-title"></span></div>
     <div class="m-sub">Check the fields you want to update. Only checked fields will be changed on all selected cases.</div>
     <div class="be-row"><input type="checkbox" id="be-chk-scenario" onchange="toggleBe('scenario')"><label class="be-lbl" for="be-chk-scenario">Scenario</label><div class="be-val" id="be-val-scenario"><input id="be-scenario" placeholder="e.g. Happy path"></div></div>
@@ -323,12 +398,16 @@ create policy "public_read" on qa_tracker_data
   </div>
 </div>
 
-<!-- Detail modal -->
+<!-- Detail modal — receipt style -->
 <div class="modal-bg" id="detail-overlay">
-  <div class="modal wide">
-<!-- <div class="m-title" id="detail-title">Test case detail</div> -->
-    <div style="margin-bottom:1rem" id="detail-body"></div>
-    <div class="m-foot">
+  <div class="modal wide" onclick="event.stopPropagation()">
+    <div class="dm-header">
+      <div class="dm-icon">🧪</div>
+      <div class="dm-title">Test Case Detail</div>
+      <button class="dm-close" onclick="closeModal('detail-overlay')">✕</button>
+    </div>
+    <div id="detail-body"></div>
+    <div class="m-foot" style="margin-top:.75rem;padding-top:.75rem">
       <button onclick="editFromDetail()" class="act-e act" style="font-size:12px;padding:5px 12px" data-admin-only>&#9998; Edit this case</button>
       <button onclick="closeModal('detail-overlay')">Close</button>
     </div>
@@ -337,7 +416,7 @@ create policy "public_read" on qa_tracker_data
 
 <!-- CSV Import modal -->
 <div class="modal-bg" id="import-overlay">
-  <div class="modal wide">
+  <div class="modal wide" onclick="event.stopPropagation()">
     <div class="m-title">Import CSV</div>
     <div class="m-sub">Upload a CSV file to add new test cases. Columns must match the sample format below. Existing cases are not affected.</div>
     <div class="csv-sample" id="csv-sample"></div>
@@ -356,7 +435,7 @@ create policy "public_read" on qa_tracker_data
 
 <!-- Cloudinary modal -->
 <div class="modal-bg" id="cdn-overlay">
-  <div class="modal">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="m-title">&#9729; Cloudinary image storage</div>
     <div class="m-sub">Upload screenshots to Cloudinary so images are stored online and shared across all users. Free accounts support up to 25 GB.</div>
     <div class="step-row"><span class="step-num">1</span>Sign up free at <strong>cloudinary.com</strong> → go to Dashboard.</div>
@@ -412,62 +491,71 @@ create policy "public_read" on qa_tracker_data
   </div>
 </div>
 
-<!-- Form -->
-<div class="card form-wrap" id="fc" data-admin-only>
-  <div class="form-head">
-    <span class="form-title" id="ftitle">Add test case</span>
-    <div class="form-acts">
+<!-- Add / Edit / Retest form modal -->
+<div class="modal-bg" id="form-overlay">
+  <div class="modal form-modal" onclick="event.stopPropagation()">
+    <div class="fm-header">
+      <div class="fm-icon" id="fm-icon">➕</div>
+      <div class="fm-title" id="fm-title">Add Test Case</div>
+      <button class="fm-close" onclick="closeFormModal()" title="Close">✕</button>
+    </div>
+    <div id="rb" class="banner bwarn">
+      <span style="font-size:14px">↺</span>
+      <span>Retesting: <strong id="rsrc"></strong> — fill Actual result &amp; Status, then save.</span>
+    </div>
+    <div class="fm-section">
+      <div class="fm-section-title">Identification &amp; Classification</div>
+      <div class="fm-g1">
+        <div><span class="lbl">Test ID *</span><input id="ftid" list="tc-list" placeholder="TC0001" autocomplete="off"><datalist id="tc-list"></datalist></div>
+        <div><span class="lbl">Test Name *</span><input id="fn" placeholder="e.g. Login shows error on wrong password"></div>
+        <div><span class="lbl">Scenario</span><input id="fscen" placeholder="e.g. Happy path"></div>
+        <div><span class="lbl">Module</span><input id="fm" placeholder="e.g. Auth"></div>
+        <div><span class="lbl">Priority</span><select id="fp"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+        <div><span class="lbl">Type</span><select id="ftype"><option value="Positive">Positive</option><option value="Negative">Negative</option></select></div>
+        <div><span class="lbl">Environment</span><select id="fenv"><option value="Staging">Staging</option><option value="Production">Production</option></select></div>
+      </div>
+    </div>
+    <div class="fm-section">
+      <div class="fm-section-title">Test Data &amp; Results</div>
+      <div class="fm-g2">
+        <div><span class="lbl">Input data</span><input id="fi" placeholder="e.g. user=admin, pass=1234"></div>
+        <div><span class="lbl">Expected result</span><input id="fe" placeholder="e.g. Redirect to dashboard"></div>
+        <div><span class="lbl">Actual result</span><input id="fa" placeholder="e.g. Error 403 shown"></div>
+      </div>
+    </div>
+    <div class="fm-section">
+      <div class="fm-section-title">Outcome &amp; Evidence</div>
+      <div class="fm-gbot">
+        <div><span class="lbl">Notes</span><input id="fnotes" placeholder="Optional notes"></div>
+        <div><span class="lbl">Status *</span><select id="fst"><option value="Pass">Pass</option><option value="Fail">Fail</option><option value="In Test">In Test</option></select></div>
+        <div><span class="lbl">Date <span class="tz">UTC+7</span></span><input id="fd" readonly></div>
+        <div><span class="lbl">Time <span class="tz">UTC+7</span></span><input id="ft" readonly></div>
+      </div>
+      <div>
+        <span class="lbl">Screenshot evidence</span>
+        <div class="upzone"><input type="file" id="fimg" accept="image/*" onchange="handleImg(this)"><span id="ulbl">Click or drop image</span></div>
+      </div>
+      <div class="img-row" id="irow">
+        <img id="ithumb" style="height:40px;border-radius:5px;border:1px solid var(--bd2);flex-shrink:0">
+        <span id="iname" style="font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <button class="bd-btn" style="font-size:11px;padding:4px 10px;flex-shrink:0" onclick="removeImg()">✕ Remove image</button>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button onclick="closeFormModal()" style="margin-right:auto">Cancel</button>
       <button onclick="clearForm()" style="font-size:11px;padding:4px 10px">Clear</button>
       <button class="bp" onclick="saveCase()" id="btn-save">+ Add test case</button>
     </div>
-  </div>
-  <div id="rb" class="banner bwarn">
-    <span style="font-size:14px">&#8635;</span>
-    <span>Retesting: <strong id="rsrc"></strong> — fill Actual result &amp; Status, then save.</span>
-    <button style="margin-left:auto;font-size:11px;padding:3px 8px" onclick="clearForm()">Cancel</button>
-  </div>
-  <div class="g-form1">
-    <div>
-      <span class="lbl">Test ID *</span>
-      <input id="ftid" list="tc-list" placeholder="TC0001" autocomplete="off">
-      <datalist id="tc-list"></datalist>
-    </div>
-    <div><span class="lbl">Test Name *</span><input id="fn" placeholder="e.g. Login shows error on wrong password"></div>
-    <div><span class="lbl">Scenario</span><input id="fscen" placeholder="e.g. Happy path"></div>
-    <div><span class="lbl">Module</span><input id="fm" placeholder="e.g. Auth"></div>
-    <div><span class="lbl">Priority</span><select id="fp"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
-    <div><span class="lbl">Type</span><select id="ftype"><option value="Positive">Positive</option><option value="Negative">Negative</option></select></div>
-    <div><span class="lbl">Environment</span><select id="fenv"><option value="Staging">Staging</option><option value="Production">Production</option></select></div>
-  </div>
-  <div class="g3">
-    <div><span class="lbl">Input data</span><input id="fi" placeholder="e.g. user=admin, pass=1234"></div>
-    <div><span class="lbl">Expected result</span><input id="fe" placeholder="e.g. Redirect to dashboard"></div>
-    <div><span class="lbl">Actual result</span><input id="fa" placeholder="e.g. Error 403 shown"></div>
-  </div>
-  <div class="divider"></div>
-  <div class="gbot">
-    <div><span class="lbl">Notes</span><input id="fnotes" placeholder="Optional notes"></div>
-    <div><span class="lbl">Status *</span><select id="fst"><option value="Pass">Pass</option><option value="Fail">Fail</option><option value="In Test">In Test</option></select></div>
-    <div><span class="lbl">Date <span class="tz">UTC+7</span></span><input id="fd" readonly></div>
-    <div><span class="lbl">Time <span class="tz">UTC+7</span></span><input id="ft" readonly></div>
-    <div>
-      <span class="lbl">Screenshot evidence</span>
-      <div class="upzone"><input type="file" id="fimg" accept="image/*" onchange="handleImg(this)"><span id="ulbl">Click or drop image</span></div>
-    </div>
-  </div>
-  <div class="img-row" id="irow">
-    <img id="ithumb" style="height:40px;border-radius:5px;border:1px solid var(--bd2);flex-shrink:0">
-    <span id="iname" style="font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-    <button class="bd-btn" style="font-size:11px;padding:4px 10px;flex-shrink:0" onclick="removeImg()">&#10005; Remove image</button>
   </div>
 </div>
 
 <!-- Filter panel -->
 <div class="panel" style="margin-bottom:8px">
   <div class="filter-row" style="align-items:flex-end">
+    <button class="bp" onclick="openFormModal('add')" style="font-size:12px;padding:6px 14px;white-space:nowrap;flex-shrink:0" data-admin-only>+ Add test case</button>
     <div style="display:flex;flex-direction:column;gap:3px;flex:2;min-width:190px">
       <span class="lbl">Search</span>
-      <div class="srch-wrap" style="flex:none"><input id="sq" placeholder="Search… (Enter to apply)" oninput="liveSearch()" onkeydown="if(event.key==='Enter')render()"><button class="srch-btn" onclick="render()">&#8629;</button></div>
+      <div class="srch-wrap" style="flex:none"><input id="sq" placeholder="Search… (Enter to apply)" oninput="liveSearch()" onkeydown="if(event.key==='Enter')render()"><button class="srch-btn" onclick="render()">↵</button></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:3px;min-width:120px"><span class="lbl">Status</span><select id="fsf" onchange="resetPage();render()"><option value="All">All statuses</option><option>Pass</option><option>Fail</option><option value="In Test">In Test</option></select></div>
     <div style="display:flex;flex-direction:column;gap:3px;min-width:110px"><span class="lbl">Type</span><select id="ftf" onchange="resetPage();render()"><option value="All">All types</option><option>Positive</option><option>Negative</option></select></div>
@@ -545,7 +633,7 @@ create policy "public_read" on qa_tracker_data
 let cases = [], editId = null, pImg = null, imgRemoved = false;
 let sbUrl = '', sbKey = '', sbAnonKey = '', syncTimer = null; /* Supabase credentials */
 const SB_TABLE = 'qa_tracker_data';
-const SB_ROW_ID = 1;
+let SB_ROW_ID = 1; /* dynamic — set after user picks a data row */
 let selectedIds = new Set();
 let reorderMode = false, reorderOriginal = [];
 let detailOpenId = null;
@@ -555,9 +643,77 @@ let currentPage = 1;
 let itemsPerPage = 10;
 /* ── Auth ── */
 let currentUser = null, currentRole = null;
-/* ── Cloudinary ── */
+/* ── Cloudinary (admin: auto-set from hardcoded defaults) ── */
 let cdnCloud = '', cdnPreset = '';
-/* Supabase REST helpers are in the STORAGE / SYNC section below */
+/* ── Select Data list (fetched from Supabase on login) ── */
+let vcDataRows = []; /* [{id, name, description}] */
+
+/* ══════════════ DARK MODE ══════════════ */
+function toggleDark() {
+  const on = document.body.classList.toggle('dark');
+  localStorage.setItem('qa_dark', on ? '1' : '');
+  document.getElementById('dm-btn').textContent = on ? '☀️' : '🌙';
+}
+function applyDark() {
+  const saved = localStorage.getItem('qa_dark');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (saved === '1' || (saved === null && prefersDark)) {
+    document.body.classList.add('dark');
+    const btn = document.getElementById('dm-btn');
+    if (btn) btn.textContent = '☀️';
+  }
+}
+applyDark();
+/* Point this to a raw JSON file in your GitHub repo/gist containing Supabase & Cloudinary secrets.
+   Format: { "supabase":{"url":"…","serviceKey":"…","anonKey":"…"}, "cloudinary":{"cloudName":"…","uploadPreset":"…"} }
+   Leave empty to fall back to values hardcoded below. */
+const GITHUB_CONFIG_URL = ''; /* e.g. 'https://raw.githubusercontent.com/OWNER/REPO/main/qa-config.json' */
+
+/* Hardcoded fallback Supabase credentials (set after pulling from GitHub or as permanent defaults) */
+const HARDCODED_SB_URL    = 'https://mxhckejhezdmxrnpkksj.supabase.co'; /* your Supabase project URL */
+const HARDCODED_SB_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14aGNrZWpoZXpkbXhybnBra3NqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njg1NDU5MSwiZXhwIjoyMDkyNDMwNTkxfQ.HoxkCIPInpU0-5wr4M-If-Ozp_l6GpeejMjC4EiJoLk'; /* service role key */
+const HARDCODED_SB_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14aGNrZWpoZXpkbXhybnBra3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NTQ1OTEsImV4cCI6MjA5MjQzMDU5MX0.UdsJPQ_jM0JN7af1Ph3N7jQ4qPlCbLkLLJzWvKT5Kaw'; /* anon key */
+
+/* Admin Cloudinary defaults (always used for admin role) */
+const CDN_CLOUD_DEFAULT  = 'dteeybsew';
+const CDN_PRESET_DEFAULT = 'qa_unsigned';
+
+async function fetchRemoteConfig() {
+  if (!GITHUB_CONFIG_URL) return null;
+  try {
+    const r = await fetch(GITHUB_CONFIG_URL, {cache:'no-store'});
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(e) { console.warn('Remote config fetch failed:', e); return null; }
+}
+
+async function resolveCredentials() {
+  /* Try GitHub config first, then hardcoded fallbacks */
+  const cfg = await fetchRemoteConfig();
+  if (cfg && cfg.supabase) {
+    sbUrl    = cfg.supabase.url      || HARDCODED_SB_URL;
+    sbKey    = cfg.supabase.serviceKey || HARDCODED_SB_KEY;
+    sbAnonKey = cfg.supabase.anonKey  || HARDCODED_SB_ANON;
+    if (cfg.cloudinary) {
+      cdnCloud  = cfg.cloudinary.cloudName   || CDN_CLOUD_DEFAULT;
+      cdnPreset = cfg.cloudinary.uploadPreset || CDN_PRESET_DEFAULT;
+    }
+  } else {
+    /* Use localStorage (previously connected) or hardcoded fallbacks */
+    sbUrl     = localStorage.getItem('qa_sb_url')  || HARDCODED_SB_URL;
+    sbKey     = localStorage.getItem('qa_sb_key')  || HARDCODED_SB_KEY;
+    sbAnonKey = localStorage.getItem('qa_sb_anon') || HARDCODED_SB_ANON;
+  }
+  /* Admin always gets hardcoded Cloudinary */
+  if (currentRole === 'admin') {
+    cdnCloud  = CDN_CLOUD_DEFAULT;
+    cdnPreset = CDN_PRESET_DEFAULT;
+  }
+  /* Persist resolved creds to localStorage for offline resilience */
+  if (sbUrl)     localStorage.setItem('qa_sb_url',  sbUrl);
+  if (sbKey)     localStorage.setItem('qa_sb_key',  sbKey);
+  if (sbAnonKey) localStorage.setItem('qa_sb_anon', sbAnonKey);
+}
 
 /* ══════════════ UTILS ══════════════ */
 function u7() { const d = new Date(Date.now() + 7*3600000); return {date: d.toISOString().slice(0,10), time: d.toISOString().slice(11,16)}; }
@@ -595,15 +751,7 @@ function doLogin() {
   }
   applyRole();
   g('login-screen').style.display = 'none';
-  if (currentRole === 'view') {
-    /* Show data-source chooser before loading the app */
-    g('vc-username').textContent = currentUser;
-    g('vc-cloud-fields').style.display = 'block';
-    g('vc-err').style.display = 'none';
-    g('view-chooser').classList.add('on');
-  } else {
-    appStart();
-  }
+  showDataSelectModal();
 }
 
 function doLogout() {
@@ -612,7 +760,6 @@ function doLogout() {
   localStorage.removeItem('qa_session_role');
   sessionStorage.removeItem('qa_session_user');
   sessionStorage.removeItem('qa_session_role');
-  /* Disconnect viewer cloud sync if active */
   if (syncTimer) { clearInterval(syncTimer); syncTimer = null; }
   sbUrl = ''; sbKey = ''; sbAnonKey = '';
   g('login-user').value = '';
@@ -620,14 +767,14 @@ function doLogout() {
   g('login-err').style.display = 'none';
   g('view-chooser').classList.remove('on');
   g('login-screen').style.display = 'flex';
-  document.body.className = '';
+  const btn = g('switch-dataset-btn'); if (btn) btn.style.display = 'none';
+  const dark = document.body.classList.contains('dark');
+  document.body.className = dark ? 'dark' : '';
   document.body.style.overflow = '';
 }
 
 function applyRole() {
-  /* Set body class so CSS can hide admin-only elements */
   document.body.classList.toggle('role-view', currentRole === 'view');
-  /* Update user pill in topbar */
   g('user-name').textContent = currentUser || '—';
   g('user-role-tag').textContent = currentRole || '—';
   g('user-role-tag').className = 'role-tag' + (currentRole === 'view' ? ' view' : '');
@@ -640,84 +787,157 @@ function tryAutoLogin() {
     currentUser = user; currentRole = role;
     applyRole();
     g('login-screen').style.display = 'none';
-    if (role === 'view') {
-      /* Viewer auto-login: show chooser */
-      g('vc-username').textContent = currentUser;
-      g('vc-cloud-fields').style.display = 'block';
-      g('vc-err').style.display = 'none';
-      g('view-chooser').classList.add('on');
-      return true; /* but don't call appStart yet */
-    }
+    showDataSelectModal();
     return true;
   }
   return false;
 }
 
-/* ── Viewer data-source chooser ── */
-/* Viewer uses the shared anon key — read-only via Supabase RLS */
-
-function viewerChooseCloud() {
-  /* Toggle bin-id input field */
-  const f = g('vc-cloud-fields');
-  f.style.display = f.style.display === 'none' ? 'block' : 'none';
-}
-
-async function viewerConnectCloud() {
-  const url  = g('vc-sb-url').value.trim().replace(/\/$/, '');
-  const anon = g('vc-sb-anon').value.trim();
-  const errEl = g('vc-err');
-  if (!url || !anon) { errEl.textContent = 'Please enter both the Project URL and Anon Key.'; errEl.style.display = 'block'; return; }
+/* ══════════════ SELECT DATA MODAL ══════════════ */
+async function showDataSelectModal() {
+  const chooser = g('view-chooser');
+  const listEl  = g('vc-list');
+  const errEl   = g('vc-err');
+  g('vc-search').value = '';
+  vcDataRows = [];
+  listEl.innerHTML = '<div class="vc-loading" id="vc-loading">Connecting to database…</div>';
   errEl.style.display = 'none';
-  const btn = g('vc-cloud-fields').querySelector('.bp');
-  btn.textContent = 'Connecting…'; btn.disabled = true;
-  try {
-    syncBadge('syncing', 'Fetching data…');
-    const r = await fetch(`${url}/rest/v1/${SB_TABLE}?id=eq.${SB_ROW_ID}&select=cases`, {
-      headers: {'apikey': anon, 'Authorization': 'Bearer ' + anon}
-    });
-    if (!r.ok) throw new Error('Invalid Project URL or Anon Key — check with your admin.');
-    const rows = await r.json();
-    const remote = (rows[0] && rows[0].cases) || [];
+  chooser.classList.add('on');
+  document.body.style.overflow = 'hidden';
 
-    /* Set credentials (viewer uses anon key for both sbKey and sbAnonKey) */
-    sbUrl = url; sbKey = anon; sbAnonKey = anon;
+  /* Resolve credentials (GitHub config or hardcoded fallbacks) */
+  await resolveCredentials();
 
-    /* Populate cases */
-    cases = remote.map(rc => ({
-      ...rc,
-      img: (rc.img && rc.img.startsWith('http')) ? rc.img : null,
-      imgName: rc.imgName || null
-    }));
-    saveLocal();
-    ensureOrderIds();
-
-    g('view-chooser').classList.remove('on');
-    document.body.style.overflow = '';
-    appStartUI();
-
-    /* Start 30-second auto-pull */
-    if (syncTimer) clearInterval(syncTimer);
-    syncTimer = setInterval(() => pull(true), 30000);
-    syncBadge('ok', 'Viewer sync ✓');
-  } catch(e) {
-    errEl.textContent = String(e.message || e);
-    errEl.style.display = 'block';
-    syncBadge('err', 'Connect failed');
+  /* Auto-set Cloudinary for admin */
+  if (currentRole === 'admin') {
+    cdnCloud  = CDN_CLOUD_DEFAULT;
+    cdnPreset = CDN_PRESET_DEFAULT;
   }
-  btn.textContent = 'Connect & load'; btn.disabled = false;
+
+  if (!sbUrl || !sbAnonKey) {
+    listEl.innerHTML = '<div class="vc-empty">⚠️ No Supabase credentials configured.<br>Set HARDCODED_SB_URL / HARDCODED_SB_ANON or point GITHUB_CONFIG_URL to a config file.</div>';
+    return;
+  }
+
+  try {
+    const key = currentRole === 'admin' ? sbKey : sbAnonKey;
+    const r = await fetch(`${sbUrl}/rest/v1/${SB_TABLE}?select=id,name,description&order=id.asc`, {
+      headers: { 'apikey': key, 'Authorization': 'Bearer ' + key }
+    });
+    if (!r.ok) throw new Error(`Database error: ${r.status} ${r.statusText}`);
+    vcDataRows = await r.json();
+    renderVcList(vcDataRows);
+  } catch(e) {
+    listEl.innerHTML = '';
+    errEl.textContent = e.message || String(e);
+    errEl.style.display = 'block';
+  }
 }
 
-function viewerChooseLocal() {
-  sbUrl = ''; sbKey = ''; sbAnonKey = '';
+function renderVcList(rows) {
+  const listEl = g('vc-list');
+  if (!rows.length) {
+    listEl.innerHTML = '<div class="vc-empty">No data found in <code>qa_tracker_data</code>.</div>';
+    return;
+  }
+  listEl.innerHTML = rows.map(row => `
+    <button class="vc-item" onclick="selectDataRow(${row.id})">
+      <div class="vc-item-icon">🗂️</div>
+      <div class="vc-item-body">
+        <div class="vc-item-name">${esc(row.name || 'Unnamed')}</div>
+        <div class="vc-item-desc">${esc(row.description || '—')}</div>
+      </div>
+      <span class="vc-item-arrow">›</span>
+    </button>
+  `).join('');
+}
+
+function filterVcList() {
+  const q = g('vc-search').value.toLowerCase();
+  const filtered = vcDataRows.filter(r =>
+    (r.name || '').toLowerCase().includes(q) ||
+    (r.description || '').toLowerCase().includes(q)
+  );
+  renderVcList(filtered);
+}
+
+async function selectDataRow(rowId) {
+  SB_ROW_ID = rowId;
   g('view-chooser').classList.remove('on');
   document.body.style.overflow = '';
-  appStart();
-  syncBadge('', 'Local only');
+  syncBadge('syncing', 'Loading data…');
+  try {
+    await pull(false);
+    appStartUI();
+    if (syncTimer) clearInterval(syncTimer);
+    syncTimer = setInterval(() => pull(true), 60000);
+    syncBadge('ok', 'Cloud sync ✓');
+    updateCdnPill();
+    /* Show the Switch Data button now that a dataset is loaded */
+    const btn = g('switch-dataset-btn');
+    if (btn) btn.style.display = '';
+    /* Label it with the selected dataset name */
+    const row = vcDataRows.find(r => r.id === rowId);
+    if (btn && row) btn.title = `Current: ${row.name} — click to switch`;
+  } catch(e) {
+    syncBadge('err', 'Load failed');
+    console.error(e);
+  }
+}
+
+/* Re-open the Select Data modal to switch datasets without logging out */
+async function switchDataset() {
+  /* Stop current sync timer so we don't get stale pushes mid-switch */
+  if (syncTimer) { clearInterval(syncTimer); syncTimer = null; }
+  cases = []; selectedIds.clear(); editId = null;
+  render();
+  syncBadge('', 'Switching…');
+  /* Re-use already-resolved credentials — no re-login needed */
+  const chooser = g('view-chooser');
+  const listEl  = g('vc-list');
+  const errEl   = g('vc-err');
+  g('vc-search').value = '';
+  vcDataRows = [];
+  listEl.innerHTML = '<div class="vc-loading">Loading datasets…</div>';
+  errEl.style.display = 'none';
+  chooser.classList.add('on');
+  document.body.style.overflow = 'hidden';
+  try {
+    const key = currentRole === 'admin' ? sbKey : sbAnonKey;
+    const r = await fetch(`${sbUrl}/rest/v1/${SB_TABLE}?select=id,name,description&order=id.asc`, {
+      headers: { 'apikey': key, 'Authorization': 'Bearer ' + key }
+    });
+    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+    vcDataRows = await r.json();
+    renderVcList(vcDataRows);
+  } catch(e) {
+    listEl.innerHTML = '';
+    errEl.textContent = e.message || String(e);
+    errEl.style.display = 'block';
+  }
+}
+
+/* Manual refresh button */
+async function manualRefresh() {
+  if (!sbUrl) return;
+  const btn = g('refresh-btn');
+  btn.classList.add('spinning');
+  try {
+    await pull(true);
+  } finally {
+    setTimeout(() => btn.classList.remove('spinning'), 600);
+  }
 }
 /* Location: JS section, after AUTH */
 function loadCdnConfig() {
-  cdnCloud  = localStorage.getItem('qa_cdn_cloud')  || '';
-  cdnPreset = localStorage.getItem('qa_cdn_preset') || '';
+  if (currentRole === 'admin') {
+    /* Admin always uses hardcoded Cloudinary credentials — no user input needed */
+    cdnCloud  = CDN_CLOUD_DEFAULT;
+    cdnPreset = CDN_PRESET_DEFAULT;
+  } else {
+    cdnCloud  = localStorage.getItem('qa_cdn_cloud')  || '';
+    cdnPreset = localStorage.getItem('qa_cdn_preset') || '';
+  }
   updateCdnPill();
 }
 
@@ -815,9 +1035,10 @@ function addMinutes(dateStr, timeStr, delta) {
 /* ══════════════ STORAGE / SYNC (Supabase) ══════════════ */
 function loadLocal() {
   try { cases = JSON.parse(localStorage.getItem('qa_cases') || '[]'); } catch(e) { cases = []; }
-  sbUrl    = localStorage.getItem('qa_sb_url')    || '';
-  sbKey    = localStorage.getItem('qa_sb_key')    || '';
-  sbAnonKey = localStorage.getItem('qa_sb_anon') || '';
+  /* Only load from localStorage if not already resolved by resolveCredentials() */
+  if (!sbUrl)     sbUrl     = localStorage.getItem('qa_sb_url')  || '';
+  if (!sbKey)     sbKey     = localStorage.getItem('qa_sb_key')  || '';
+  if (!sbAnonKey) sbAnonKey = localStorage.getItem('qa_sb_anon') || '';
 }
 function saveLocal() { localStorage.setItem('qa_cases', JSON.stringify(cases)); }
 
@@ -854,11 +1075,13 @@ async function push() {
 }
 
 async function pull(silent) {
-  if (!sbUrl || !sbKey) return;
+  if (!sbUrl) return;
+  const key = currentRole === 'view' ? sbAnonKey : sbKey;
+  if (!key) return;
   if (!silent) syncBadge('syncing', 'Fetching…');
   try {
     const r = await fetch(`${sbRestUrl(sbUrl)}?id=eq.${SB_ROW_ID}&select=cases`, {
-      headers: {'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey}
+      headers: {'apikey': key, 'Authorization': 'Bearer ' + key}
     });
     if (!r.ok) throw new Error(r.status);
     const rows = await r.json();
@@ -888,7 +1111,7 @@ async function initDbRow(url, key) {
 
 function startSync() {
   if (syncTimer) clearInterval(syncTimer);
-  if (sbUrl && sbKey) { syncTimer = setInterval(() => pull(true), 30000); syncBadge('ok', 'Cloud connected'); }
+  if (sbUrl && sbKey) { syncTimer = setInterval(() => pull(true), 60000); syncBadge('ok', 'Cloud connected'); }
 }
 
 /* ══════════════ CLOUD SETTINGS (Supabase) ══════════════ */
@@ -997,6 +1220,96 @@ async function handleImg(inp) {
 function removeImg() { pImg = null; imgRemoved = true; g('fimg').value = ''; g('ulbl').textContent = 'Click or drop image'; g('irow').style.display = 'none'; }
 function resetImg() { pImg = null; imgRemoved = false; g('fimg').value = ''; g('ulbl').textContent = 'Click or drop image'; g('irow').style.display = 'none'; }
 
+/* ══════════════ FORM MODAL ══════════════ */
+function openFormModal(mode, id) {
+  const overlay = g('form-overlay');
+  const icon = g('fm-icon'), title = g('fm-title'), btnSave = g('btn-save');
+  if (mode === 'add') {
+    editId = null;
+    icon.className = 'fm-icon add'; icon.textContent = '➕';
+    title.textContent = 'Add Test Case';
+    btnSave.textContent = '+ Add test case';
+    g('rb').classList.remove('on');
+    resetImg();
+    const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
+    ['ftid','fn','fscen','fm','fi','fe','fa','fnotes'].forEach(x => { const el = g(x); if (el) el.value = ''; });
+    g('fp').value = 'Medium'; g('ftype').value = 'Positive'; g('fenv').value = 'Staging'; g('fst').value = 'Pass';
+  } else if (mode === 'edit' && id) {
+    editId = id;
+    const c = cases.find(x => x.id === id); if (!c) return;
+    icon.className = 'fm-icon edit'; icon.textContent = '✏️';
+    title.textContent = 'Edit Test Case';
+    btnSave.textContent = '✓ Save changes';
+    g('rb').classList.remove('on');
+    g('ftid').value = c.testId || '';
+    g('fn').value = c.name || '';
+    g('fscen').value = c.scenario || '';
+    g('fm').value = c.module || '';
+    g('fp').value = c.priority || 'Medium';
+    g('ftype').value = c.type || 'Positive';
+    g('fenv').value = c.env || 'Staging';
+    g('fi').value = c.input || '';
+    g('fe').value = c.expected || '';
+    g('fa').value = c.actual || '';
+    g('fnotes').value = c.notes || '';
+    g('fst').value = c.status || 'Pass';
+    g('fd').value = c.date || '';
+    g('ft').value = c.time || '';
+    if (c.img) {
+      pImg = {full: c.img, name: c.imgName || 'existing', isCdn: c.img.startsWith('http')};
+      g('ithumb').src = c.img; g('iname').textContent = c.imgName || 'existing'; g('irow').style.display = 'flex';
+      g('ulbl').textContent = 'Replace image';
+    } else { resetImg(); }
+    imgRemoved = false;
+  } else if (mode === 'retest' && id) {
+    editId = null;
+    const c = cases.find(x => x.id === id); if (!c) return;
+    icon.className = 'fm-icon retest'; icon.textContent = '🔄';
+    title.textContent = 'Retest Case';
+    btnSave.textContent = '↺ Save retest';
+    g('rb').classList.add('on');
+    g('rsrc').textContent = (c.testId || '') + ' ' + (c.name || '');
+    g('ftid').value = c.testId || '';
+    g('fn').value = c.name || '';
+    g('fscen').value = c.scenario || '';
+    g('fm').value = c.module || '';
+    g('fp').value = c.priority || 'Medium';
+    g('ftype').value = c.type || 'Positive';
+    g('fenv').value = c.env || 'Staging';
+    g('fi').value = c.input || '';
+    g('fe').value = c.expected || '';
+    g('fa').value = ''; g('fnotes').value = ''; g('fst').value = 'Pass';
+    const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
+    resetImg();
+  }
+  overlay.classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFormModal() {
+  g('form-overlay').classList.remove('on');
+  document.body.style.overflow = '';
+  editId = null;
+  render();
+}
+
+function clearForm() {
+  editId = null;
+  g('rb').classList.remove('on');
+  resetImg();
+  ['ftid','fn','fscen','fm','fi','fe','fa','fnotes'].forEach(x => { const el = g(x); if (el) el.value = ''; });
+  g('fp').value = 'Medium'; g('ftype').value = 'Positive'; g('fenv').value = 'Staging'; g('fst').value = 'Pass';
+  const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
+  const icon = g('fm-icon'), title = g('fm-title'), btnSave = g('btn-save');
+  if (icon) { icon.className = 'fm-icon add'; icon.textContent = '➕'; }
+  if (title) title.textContent = 'Add Test Case';
+  if (btnSave) btnSave.textContent = '+ Add test case';
+}
+
+function editCase(id) { openFormModal('edit', id); }
+function retestCase(id) { openFormModal('retest', id); }
+function editFromDetail() { const id = detailOpenId; closeModal('detail-overlay'); openFormModal('edit', id); }
+
 /* ══════════════ FORM CRUD ══════════════ */
 function buildTCList() {
   const dl = g('tc-list'); dl.innerHTML = '';
@@ -1022,47 +1335,8 @@ function saveCase() {
   };
   if (editId) { const i = cases.findIndex(c => c.id === editId); if (i > -1) cases[i] = obj; editId = null; }
   else { obj.orderId = 0; cases.unshift(obj); ensureOrderIds(); }
-  saveLocal(); push(); clearForm(); render();
-}
-function clearForm() {
-  ['ftid','fn','fscen','fm','fi','fe','fa','fnotes'].forEach(id => g(id).value = '');
-  g('fp').value = 'Medium'; g('fst').value = 'Pass'; g('ftype').value = 'Positive'; g('fenv').value = 'Staging';
-  const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
-  resetImg(); editId = null;
-  g('ftitle').textContent = 'Add test case'; g('btn-save').textContent = '+ Add test case';
-  g('rb').classList.remove('on'); render();
-}
-function editCase(id) {
-  const c = cases.find(x => x.id === id); if (!c) return; editId = id;
-  g('ftid').value = c.testId||''; g('fn').value = c.name||''; g('fscen').value = c.scenario||''; g('fm').value = c.module||'';
-  g('fp').value = c.priority||'Medium'; g('ftype').value = c.type||'Positive'; g('fenv').value = c.env||'Staging';
-  g('fi').value = c.input||''; g('fe').value = c.expected||''; g('fa').value = c.actual||'';
-  g('fst').value = c.status||'Pass'; g('fnotes').value = c.notes||'';
-  g('fd').value = c.date||''; g('ft').value = c.time||'';
-  resetImg();
-  if (c.img) { g('ithumb').src = c.img; g('iname').textContent = c.imgName||'screenshot'; g('irow').style.display = 'flex'; g('ulbl').textContent = 'Replace image'; }
-  g('ftitle').textContent = 'Edit test case'; g('btn-save').textContent = 'Save changes';
-  g('fc').scrollIntoView({behavior:'smooth', block:'start'});
-  /* Ensure form-head (with Save button) clears the sticky topbar */
-  setTimeout(() => {
-    const fc = g('fc');
-    const top = fc.getBoundingClientRect().top + window.scrollY - 58;
-    window.scrollTo({top: Math.max(0, top), behavior: 'smooth'});
-  }, 80);
-  render();
-}
-function editFromDetail() { const id = detailOpenId; g('detail-overlay').classList.remove('on'); editCase(id); }
-function retestCase(id) {
-  const c = cases.find(x => x.id === id); if (!c) return; editId = null;
-  g('ftid').value = c.testId||''; g('fn').value = c.name||''; g('fscen').value = c.scenario||''; g('fm').value = c.module||'';
-  g('fp').value = c.priority||'Medium'; g('ftype').value = c.type||'Positive'; g('fenv').value = c.env||'Staging';
-  g('fi').value = c.input||''; g('fe').value = c.expected||'';
-  g('fa').value = ''; g('fst').value = 'In Test'; g('fnotes').value = '';
-  const n = u7(); g('fd').value = n.date; g('ft').value = n.time; resetImg();
-  g('ftitle').textContent = 'Retest case'; g('btn-save').textContent = '+ Save retest';
-  g('rb').classList.add('on');
-  g('rsrc').textContent = (c.testId ? c.testId+' · ' : '') + c.name + (c.date ? ' (' + fmt(c.date) + ')' : '');
-  g('fc').scrollIntoView({behavior:'smooth'}); g('fa').focus();
+  saveLocal(); push();
+  closeFormModal();
 }
 function deleteCase(id) {
   if (!confirm('Delete this test case?')) return;
@@ -1074,36 +1348,84 @@ function clearAll() {
   if (confirm('Delete ALL test cases? This cannot be undone.')) { cases = []; selectedIds.clear(); clearForm(); saveLocal(); push(); render(); }
 }
 
-/* ══════════════ DETAIL VIEW ══════════════ */
+/* ══════════════ DETAIL VIEW (receipt-style) ══════════════ */
 function openDetail(id) {
   const c = cases.find(x => x.id === id); if (!c) return;
   detailOpenId = id;
+
   const stCls = c.status === 'Pass' ? 'pass' : c.status === 'Fail' ? 'fail' : 'intest';
   const priCls = c.priority === 'High' ? 'bhi' : c.priority === 'Low' ? 'blo' : 'bmed';
   const envCls = (c.env||'Staging') === 'Production' ? 'bprod' : 'bstag';
   const typCls = (c.type||'Positive') === 'Positive' ? 'pos' : 'neg';
-  // g('detail-title').textContent = (c.testId||'') + (c.testId && c.name ? ' — ' : '') + (c.name||''); /* no longer used */
+  const typeLabel = (c.type||'Positive') === 'Positive' ? '+ Positive' : '− Negative';
+
+  /* Status icon */
+  const stIcon = c.status === 'Pass' ? '✅' : c.status === 'Fail' ? '❌' : '🔄';
+
   g('detail-body').innerHTML = `
-    <div class="detail-grid">
-      <div class="detail-field"><span class="detail-lbl">Test ID</span><span class="detail-val mono">${esc(c.testId||'—')}</span></div>
-      <div class="detail-field"><span class="detail-lbl">Date &amp; Time</span><span class="detail-val">${fmt(c.date)} ${c.time||''} <span class="tz">UTC+7</span></span></div>
-      <div class="detail-field detail-full"><span class="detail-lbl">Test Name</span><span class="detail-val" style="font-weight:600;font-size:14px">${esc(c.name||'—')}</span></div>
-      <div class="detail-sep"></div>
-      <div class="detail-field"><span class="detail-lbl">Scenario</span><span class="detail-val">${esc(c.scenario||'—')}</span></div>
-      <div class="detail-field"><span class="detail-lbl">Module</span><span class="detail-val">${esc(c.module||'—')}</span></div>
-      <div class="detail-field"><span class="detail-lbl">Priority</span><span class="badge ${priCls}" style="font-size:12px;margin-top:2px">${esc(c.priority||'—')}</span></div>
-      <div class="detail-field"><span class="detail-lbl">Type</span><span class="badge ${typCls}" style="font-size:12px;margin-top:2px">${(c.type||'Positive')==='Positive'?'+ Positive':'− Negative'}</span></div>
-      <div class="detail-field"><span class="detail-lbl">Status</span><span class="badge ${stCls}" style="font-size:12px;margin-top:2px">${esc(c.status||'—')}</span></div>
-      <div class="detail-field"><span class="detail-lbl">Environment</span><span class="badge ${envCls}" style="font-size:12px;margin-top:2px">${esc(c.env||'Staging')}</span></div>
-      <div class="detail-sep"></div>
-      <div class="detail-field detail-full"><span class="detail-lbl">Input data</span><span class="detail-val" style="color:var(--text2)">${esc(c.input||'—')}</span></div>
-      <div class="detail-field detail-full"><span class="detail-lbl">Expected result</span><span class="detail-val">${esc(c.expected||'—')}</span></div>
-      <div class="detail-field detail-full"><span class="detail-lbl">Actual result</span><span class="detail-val" style="font-weight:500">${esc(c.actual||'—')}</span></div>
-      <div class="detail-field detail-full"><span class="detail-lbl">Notes</span><span class="detail-val" style="color:var(--text2)">${esc(c.notes||'—')}</span></div>
-      ${c.img ? `<div class="detail-field detail-full"><span class="detail-lbl">Screenshot</span><div style="margin-top:6px"><img src="${c.img}" onclick="openPP('${c.id}')" style="max-height:180px;max-width:100%;border-radius:6px;border:1px solid var(--bd);cursor:pointer;object-fit:contain" title="Click to view full size"><p style="font-size:11px;color:var(--text3);margin-top:4px">${esc(c.imgName||'screenshot')} — click to view full size</p></div></div>` : ''}
-    </div>`;
+    <!-- Status Row -->
+    <div class="dm-section">
+      <div class="dm-status-row">
+        <span class="dm-status-lbl">Status Pengujian</span>
+        <span class="badge ${stCls}" style="font-size:12px">${stIcon} ${esc(c.status||'—')}</span>
+      </div>
+    </div>
+
+    <!-- Test Info -->
+    <div class="dm-section">
+      <div class="dm-section-title">Informasi Test Case</div>
+      <div class="dm-item-row">
+        <div class="dm-qty" style="background:var(--bg-info);color:var(--c-info);border-color:#85b7eb">${esc(c.testId||'—')}</div>
+        <div class="dm-item-body">
+          <div class="dm-item-name">${esc(c.name||'—')}</div>
+          <div class="dm-item-note">${esc(c.scenario||'—')}${c.module ? ' · ' + esc(c.module) : ''}</div>
+        </div>
+        <div class="dm-item-val">
+          <span class="badge ${priCls}" style="font-size:11px">${esc(c.priority||'Medium')}</span>
+        </div>
+      </div>
+      <div class="dm-item-row" style="padding-top:8px;border-top:1px solid var(--bd);margin-top:4px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <span class="badge ${typCls}" style="font-size:11px">${typeLabel}</span>
+          <span class="badge ${envCls}" style="font-size:11px">${esc(c.env||'Staging')}</span>
+          <span style="font-size:11px;color:var(--text3)">${fmt(c.date)}${c.time ? ' · ' + c.time + ' UTC+7' : ''}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Steps -->
+    <div class="dm-section">
+      <div class="dm-section-title">Rincian Pengujian</div>
+      <div class="dm-pay-row" style="align-items:flex-start;padding:6px 0">
+        <span class="dm-pay-lbl" style="flex-shrink:0;min-width:110px">Input Data</span>
+        <span class="dm-pay-val" style="text-align:right;color:var(--text2)">${esc(c.input||'—')}</span>
+      </div>
+      <div class="dm-pay-row" style="align-items:flex-start;padding:6px 0;border-top:1px solid var(--bd)">
+        <span class="dm-pay-lbl" style="flex-shrink:0;min-width:110px">Expected</span>
+        <span class="dm-pay-val" style="text-align:right">${esc(c.expected||'—')}</span>
+      </div>
+      <div class="dm-total-row">
+        <div>
+          <div class="dm-total-lbl">Actual Result</div>
+          ${c.notes ? `<div class="dm-total-sub">Catatan: ${esc(c.notes)}</div>` : ''}
+        </div>
+        <span class="dm-total-val ${stCls === 'pass' ? 'green' : stCls === 'fail' ? 'red' : ''}" style="font-size:13px;max-width:55%;text-align:right">${esc(c.actual||'—')}</span>
+      </div>
+    </div>
+
+    <!-- Screenshot (if any) -->
+    ${c.img ? `
+    <div class="dm-section">
+      <div class="dm-section-title">Screenshot / Evidence</div>
+      <div style="margin-top:4px">
+        <img src="${c.img}" onclick="openPP('${c.id}')" style="max-height:160px;max-width:100%;border-radius:8px;border:1px solid var(--bd);cursor:zoom-in;object-fit:contain;display:block" title="Click to view full size">
+        <p style="font-size:11px;color:var(--text3);margin-top:6px">📎 ${esc(c.imgName||'screenshot')} — click to zoom</p>
+      </div>
+    </div>` : ''}
+  `;
   openModal('detail-overlay');
 }
+
 
 /* ══════════════ IMAGE PREVIEW (FULL RES + ZOOM) ══════════════ */
 function openPP(id) {
@@ -1381,19 +1703,13 @@ function buildHead(allChecked) {
     <th style="width:38px;text-align:center">${(reorderMode || currentRole==='view') ? '' : `<input type="checkbox" id="select-all" ${allChecked?'checked':''} onchange="toggleSelectAll(this)" title="Select all visible">`}</th>
     <th data-col="datetime" style="width:90px;cursor:default">Date &amp; time<div class="resize-handle"></div></th>
     <th data-col="testid" style="width:70px">Test ID<div class="resize-handle"></div></th>
-    <!-- NAME COLUMN: adjust width="30%" to change. td.name-cell in CSS controls truncation style. -->
     <th data-col="name" style="width:30%;min-width:160px">Name<div class="resize-handle"></div></th>
-    <th data-col="scenario" style="width:30%">Scenario<div class="resize-handle"></div></th>
-    <th data-col="module" style="width:31%">Module<div class="resize-handle"></div></th>
+    <th data-col="scenario" style="width:25%">Scenario<div class="resize-handle"></div></th>
+    <th data-col="module" style="width:20%">Module<div class="resize-handle"></div></th>
     <th data-col="priority" style="width:70px">Priority<div class="resize-handle"></div></th>
     <th data-col="type" style="width:68px">Type<div class="resize-handle"></div></th>
+    <th data-col="env" style="width:90px">Env<div class="resize-handle"></div></th>
     <th data-col="status" style="width:72px">Status<div class="resize-handle"></div></th>
-    <th data-col="env" style="width:100px">Env<div class="resize-handle"></div></th>
-    <th data-col="input" style="width:20%">Input data<div class="resize-handle"></div></th>
-    <th data-col="expected" style="width:20%">Expected<div class="resize-handle"></div></th>
-    <th data-col="actual" style="width:20%">Actual<div class="resize-handle"></div></th>
-    <th data-col="notes" style="width:20%">Notes<div class="resize-handle"></div></th>
-    <th data-col="img" style="width:66px">Img</th>
     <th data-col="actions" style="width:${reorderMode?'60px':'168px'}">Actions</th>
   </tr>`;
   initResizable();
@@ -1482,18 +1798,13 @@ function render() {
       ${firstCell}
       <td class="dt-cell"><span style="font-size:12px">${fmt(c.date)}</span><br><span style="font-size:10px;color:var(--text2)">${c.time||'—'} UTC+7</span></td>
       <td style="font-family:monospace;font-size:11px;color:var(--c-blue);font-weight:600;overflow:visible;max-width:none;cursor:pointer;white-space:nowrap" onclick="openDetail('${c.id}')" title="Click to view details">${esc(c.testId||'—')}${orderBadge}</td>
-      <td class="name-cell" title="${esc(c.name)}" style="font-weight:600">${esc(c.name)}</td>
+      <td class="name-cell" title="${esc(c.name)}" style="font-weight:600;cursor:pointer" onclick="openDetail('${c.id}')">${esc(c.name)}</td>
       <td title="${esc(c.scenario||'')}" style="color:var(--text2)">${esc(c.scenario||'—')}</td>
       <td title="${esc(c.module||'')}">${esc(c.module||'—')}</td>
       <td class="badge-cell"><span class="badge ${priCls}" style="font-size:10px">${esc(pri)}</span></td>
       <td class="badge-cell"><span class="badge ${typ==='Positive'?'pos':'neg'}">${typ==='Positive'?'+Pos':'−Neg'}</span></td>
-      <td class="badge-cell"><span class="badge ${stCls}">${esc(c.status)}</span></td>
       <td class="badge-cell"><span class="badge ${envCls}" style="font-size:10px">${esc(env)}</span></td>
-      <td title="${esc(c.input||'')}" style="color:var(--text2)">${esc(c.input||'—')}</td>
-      <td title="${esc(c.expected||'')}">${esc(c.expected||'—')}</td>
-      <td title="${esc(c.actual||'')}">${esc(c.actual||'—')}</td>
-      <td title="${esc(c.notes||'')}" style="color:var(--text2)">${esc(c.notes||'—')}</td>
-      <td>${thumb}</td>
+      <td class="badge-cell"><span class="badge ${stCls}">${esc(c.status)}</span></td>
       <td class="act-cell">
         ${reorderMode
           ? '<span style="font-size:11px;color:var(--text3)">drag ↑↓</span>'
@@ -1590,8 +1901,7 @@ function showImportError(msg) { g('import-error').textContent = msg; g('import-e
 
 /* ══════════════ APP START (runs after login) ══════════════ */
 function appStartUI() {
-  /* Lightweight UI init — does NOT load local or pull from cloud.
-     Called by viewerConnectCloud which already has cases set. */
+  /* Lightweight UI init — called after cases are already populated from Supabase via selectDataRow */
   ensureOrderIds();
   buildTCList();
   const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
@@ -1609,9 +1919,7 @@ function appStart() {
   const now = new Date(Date.now() + 7*3600000);
   g('tb-date').textContent = now.toLocaleDateString('en-GB', {weekday:'short',day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'}) + ' · UTC+7';
   loadCdnConfig();
-  /* Admin only: use saved sbUrl/sbKey for full sync.
-     Viewer cloud sync is handled entirely by viewerConnectCloud. */
-  if (currentRole !== 'view' && sbUrl && sbKey) {
+  if (sbUrl && sbKey) {
     syncBadge('syncing','Connecting…'); pull(false).then(() => startSync());
   }
   render();
@@ -1619,13 +1927,9 @@ function appStart() {
 
 /* ══════════════ INIT (boot) ══════════════ */
 function init() {
-  const didAutoLogin = tryAutoLogin();
-  /* For admin auto-login, start the app immediately.
-     For viewer auto-login, tryAutoLogin shows the chooser — don't call appStart here. */
-  if (didAutoLogin && currentRole !== 'view') {
-    appStart();
-  }
-  /* Otherwise login screen stays visible — user must sign in manually. */
+  applyDark();
+  tryAutoLogin();
+  /* If no auto-login session found, login screen stays visible. */
 }
 init();
 </script>
