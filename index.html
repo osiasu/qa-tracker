@@ -31,7 +31,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .sync-pill.syncing{color:var(--c-warn);border-color:#ef9f27;background:var(--bg-warn)}
 .sync-pill.err{color:var(--c-danger);border-color:#f09595;background:var(--bg-danger)}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
-input,select{font-family:inherit;font-size:12px;color:var(--text);background:var(--bg);border:1px solid var(--bd2);border-radius:var(--r);padding:6px 10px;width:100%;outline:none;transition:border-color .15s,box-shadow .15s}
+input,select{font-family:inherit;font-size:12px;color:var(--text);background:var(--bg);border:1px solid var(--bd2);border-radius:var(--r);padding:6px 14px;width:100%;outline:none;transition:border-color .15s,box-shadow .15s}
 input:focus,select:focus{border-color:#378add;box-shadow:0 0 0 3px rgba(55,138,221,.18)}
 input[readonly]{background:var(--bg2);color:var(--text2);cursor:default}
 input[type=date]{cursor:pointer}
@@ -92,7 +92,12 @@ button:active{transform:scale(.97)}
 .fm-section{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-bottom:10px}
 .fm-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:10px}
 @media(max-width:860px){.fm-g1{grid-template-columns:1fr 1fr 1fr}.fm-gbot{grid-template-columns:1fr 1fr}}
-.img-row{display:none;align-items:center;gap:10px;margin-top:9px;padding:8px 10px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--bd)}
+.img-row{display:none;flex-wrap:wrap;gap:8px;margin-top:9px;padding:8px 10px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--bd)}
+.evi-chip{display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--bg);border:1px solid var(--bd2);border-radius:6px;font-size:11px;max-width:100%}
+.evi-chip img{height:36px;width:48px;object-fit:cover;border-radius:4px;border:1px solid var(--bd);flex-shrink:0}
+.evi-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;color:var(--text2)}
+.evi-chip button{width:20px;height:20px;border-radius:4px;border:1px solid var(--bd2);background:var(--bg);color:var(--text2);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s}
+.evi-chip button:hover{background:var(--bg-danger);color:#fff}
 .upzone{border:1.5px dashed var(--bd2);border-radius:var(--r);padding:9px 10px;text-align:center;cursor:pointer;color:var(--text2);font-size:11px;background:var(--bg2);position:relative;transition:border-color .15s}
 .upzone:hover{border-color:var(--c-blue);color:var(--c-blue)}
 .upzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;display:block}
@@ -144,6 +149,11 @@ tr.drag-over-bot td{border-bottom:2px solid var(--c-blue)!important}
 .modal-bg.on{display:flex}
 .modal{background:var(--bg);border-radius:var(--rl);border:1px solid var(--bd);padding:1.5rem;width:100%;max-width:560px;position:relative}
 .modal.wide{max-width:780px}
+.modal.detail-modal{max-height:calc(100vh - 4rem);display:flex;flex-direction:column;overflow:hidden;padding:0}
+.modal.detail-modal .dm-header{position:sticky;top:0;z-index:2;background:var(--bg);padding:1.25rem 1.5rem 1rem;margin-bottom:0;border-bottom:1px solid var(--bd)}
+.detail-scroll{overflow-y:auto;padding:1rem 1.5rem;min-height:0}
+.modal.detail-modal .m-foot{position:sticky;bottom:0;z-index:2;background:var(--bg);margin-top:0;padding:1rem 1.5rem;border-top:1px solid var(--bd)}
+@media(max-width:640px){.modal-bg{padding:1rem}.modal.detail-modal{max-height:calc(100vh - 2rem)}}
 .modal.form-modal{max-width:880px}
 .m-title{font-size:14px;font-weight:600;margin-bottom:4px}
 .m-sub{font-size:12px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6}
@@ -209,8 +219,10 @@ code{font-size:11px;background:var(--bg2);border:1px solid var(--bd);border-radi
 .pp-canvas:active{cursor:grabbing}
 .pp-canvas img{display:block;transform-origin:center center;transition:transform .15s;max-width:none;user-select:none}
 /* Screenshot thumbnail */
+.thumb-wrap{position:relative;display:inline-block;width:44px;height:30px;vertical-align:middle}
 .thumb{width:44px;height:30px;object-fit:cover;border-radius:5px;border:1px solid var(--bd2);cursor:pointer;display:block;transition:opacity .15s,transform .15s}
 .thumb:hover{opacity:.8;transform:scale(1.06)}
+.thumb-count{position:absolute;right:-5px;bottom:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--c-blue);color:#fff;font-size:9px;font-weight:800;line-height:16px;text-align:center;border:1px solid var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.22);pointer-events:none}
 .tz{font-size:9px;background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:1px 4px;color:var(--text3);vertical-align:middle;margin-left:3px}
 /* Reorder panel */
 .reorder-panel{background:var(--bg);border:2px solid var(--c-blue);border-radius:var(--rl);margin-bottom:10px;display:none}
@@ -281,6 +293,47 @@ body.role-view #reorder-btn{display:none!important}
 
 /* CSV import */
 .csv-sample{font-family:monospace;font-size:11px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:10px;overflow-x:auto;white-space:pre;line-height:1.6;margin:10px 0}
+/* ── Credential rows (form) ── */
+.cred-input-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.cred-input-row input{flex:1;font-size:12px}
+.cred-input-row .cred-rm{width:28px;height:28px;border-radius:50%;border:1px solid var(--bd2);background:var(--bg2);color:var(--c-danger);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cred-input-row .cred-rm:hover{background:var(--bg-danger)}
+.cred-add-btn{font-size:11px;padding:4px 10px;margin-top:4px;color:var(--c-info);border-color:#85b7eb;background:var(--bg-info)}
+/* ── Credential display (detail modal) ── */
+.cred-display{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.cred-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);font-size:12px}
+.cred-item .cred-key{font-weight:600;color:var(--text2);min-width:70px;flex-shrink:0}
+.cred-item .cred-val{flex:1;color:var(--text);word-break:break-all}
+.cred-item .cred-copy{width:28px;height:28px;border-radius:7px;border:1px solid var(--bd2);background:var(--bg);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s,color .12s,border-color .12s;position:relative}
+.cred-item .cred-copy::before,.cred-item .cred-copy::after{content:'';position:absolute;border:1.8px solid currentColor;border-radius:3px;box-sizing:border-box}
+.cred-item .cred-copy::before{width:12px;height:12px;left:7px;top:7px;opacity:.65}
+.cred-item .cred-copy::after{width:12px;height:12px;left:10px;top:10px;background:var(--bg)}
+.cred-item .cred-copy:hover{background:var(--bg-info);color:var(--c-info);border-color:var(--c-info)}
+/* ── Copy toast ── */
+.copy-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#222;color:#fff;font-size:12px;padding:6px 16px;border-radius:20px;z-index:99999;opacity:0;transition:opacity .2s;pointer-events:none}
+.copy-toast.on{opacity:1}
+body.dark .copy-toast{background:#f0f0f0;color:#111}
+/* ── Log timeline (detail modal) ── */
+.log-timeline{display:flex;flex-direction:column;gap:0;margin-top:8px;position:relative;padding-left:18px}
+.log-timeline::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:var(--bd2);border-radius:2px}
+.log-card{position:relative;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;transition:box-shadow .12s}
+.log-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.log-card::before{content:'';position:absolute;left:-15px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--c-blue);border:2px solid var(--bg);box-shadow:0 0 0 2px var(--bd2)}
+.log-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.log-card-date{font-size:11px;font-weight:600;color:var(--text2)}
+.log-card-del{width:22px;height:22px;border-radius:50%;border:1px solid transparent;background:transparent;color:var(--text3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:background .12s,color .12s}
+.log-card-del:hover{background:var(--bg-danger);color:var(--c-danger);border-color:#f09595}
+.log-card-body{font-size:12px;color:var(--text);line-height:1.5}
+.log-card-field{margin-top:4px;font-size:11px;color:var(--text2)}
+.log-card-field strong{color:var(--text);font-weight:600}
+.log-empty{font-size:12px;color:var(--text3);padding:12px 0;text-align:center}
+.log-toggle{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;user-select:none;margin-bottom:0}
+.log-toggle-meta{font-size:11px;color:var(--text3);font-weight:500;margin-left:auto}
+.log-chevron{font-size:12px;color:var(--text2);transition:transform .18s}
+.log-collapse{max-height:0;overflow:hidden;transition:max-height .25s ease}
+.log-collapse.on{max-height:420px;overflow-y:auto;margin-top:12px;padding-right:2px}
+.log-collapse.on .log-chevron{transform:rotate(90deg)}
+.log-add-btn{margin-top:8px;font-size:11px;padding:5px 12px;color:var(--c-info);border-color:#85b7eb;background:var(--bg-info)}
 @media(max-width:800px){.g-form1{grid-template-columns:1fr 1fr 1fr}.g3{grid-template-columns:1fr 1fr}.gbot{grid-template-columns:1fr 1fr}}
 @media(max-width:500px){.g-form1,.g3,.gbot{grid-template-columns:1fr}.wrap{padding:1rem 0.75rem}}
 </style>
@@ -308,7 +361,7 @@ body.role-view #reorder-btn{display:none!important}
     <div class="vc-title">Select Data</div>
     <div class="vc-sub">Choose data to continue</div>
     <div class="vc-search-wrap">
-      <span class="vc-search-icon">🔍</span>
+      <span class="vc-search-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
       <input id="vc-search" placeholder="Search by name or description…" oninput="filterVcList()" autocomplete="off">
     </div>
     <div class="vc-list" id="vc-list">
@@ -328,12 +381,12 @@ body.role-view #reorder-btn{display:none!important}
   </span>
   <span class="sync-pill" id="sync-pill"><span class="sync-dot"></span><span id="sync-txt">Local only</span></span>
   <button class="refresh-btn" id="refresh-btn" onclick="manualRefresh()" title="Refresh data from cloud">↻</button>
-  <button onclick="switchDataset()" id="switch-dataset-btn" style="font-size:11px;padding:4px 10px;display:none" title="Switch to a different dataset">🗂️ Switch data</button>
+  <button onclick="switchDataset()" id="switch-dataset-btn" style="font-size:11px;padding:4px 10px;display:none" title="Switch to a different dataset"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h.34"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M14 2H6a2 2 0 0 0-2 2v4"/><path d="M14 2l6 6v12a2 2 0 0 1-2 2h-4"/></svg> Switch data</button>
   <span class="cdn-pill off" id="cdn-pill" onclick="openCdnModal()" title="Cloudinary image storage">&#9729; Cloudinary</span>
   <button onclick="openSettings()" style="display:none;font-size:11px;padding:4px 10px" data-admin-only id="cloud-sync-btn">&#9881; Cloud sync</button>
   <button onclick="openImport()" style="font-size:11px;padding:4px 10px" data-admin-only>&#8593; Import CSV</button>
   <button onclick="smartExport()" style="font-size:11px;padding:4px 10px" id="export-btn">&#8595; Export CSV</button>
-  <button class="dm-btn" id="dm-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+  <button class="dm-btn" id="dm-btn" onclick="toggleDark()" title="Toggle dark mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
   <button onclick="doLogout()" style="font-size:11px;padding:4px 10px;color:var(--text2)">Sign out</button>
 </div>
 
@@ -400,19 +453,46 @@ create policy "public_read" on qa_tracker_data
 
 <!-- Detail modal — receipt style -->
 <div class="modal-bg" id="detail-overlay">
-  <div class="modal wide" onclick="event.stopPropagation()">
+  <div class="modal wide detail-modal" onclick="event.stopPropagation()">
     <div class="dm-header">
-      <div class="dm-icon">🧪</div>
+      <div class="dm-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16.5h10"/></svg></div>
       <div class="dm-title">Test Case Detail</div>
       <button class="dm-close" onclick="closeModal('detail-overlay')">✕</button>
     </div>
-    <div id="detail-body"></div>
-    <div class="m-foot" style="margin-top:.75rem;padding-top:.75rem">
+    <div class="detail-scroll">
+      <div id="detail-body"></div>
+    </div>
+    <div class="m-foot">
       <button onclick="editFromDetail()" class="act-e act" style="font-size:12px;padding:5px 12px" data-admin-only>&#9998; Edit this case</button>
       <button onclick="closeModal('detail-overlay')">Close</button>
     </div>
   </div>
 </div>
+
+<!-- Add Log modal (admin only) -->
+<div class="modal-bg" id="log-overlay">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="dm-header">
+      <div class="dm-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14h6"/><path d="M9 18h6"/><path d="M9 10h1"/></svg></div>
+      <div class="dm-title">Tambah Log Pengujian</div>
+      <button class="dm-close" onclick="closeModal('log-overlay')">✕</button>
+    </div>
+    <div style="padding:0 1rem 1rem">
+      <div class="m-field"><span class="lbl">Tanggal <span class="tz">UTC+7</span></span><input id="log-date" readonly></div>
+      <div class="m-field"><span class="lbl">Waktu <span class="tz">UTC+7</span></span><input id="log-time" readonly></div>
+      <div class="m-field"><span class="lbl">Deskripsi Pengujian *</span><textarea id="log-desc" rows="3" placeholder="Deskripsi aktivitas pengujian..." style="width:100%;font-size:12px;padding:8px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg);color:var(--text);resize:vertical"></textarea></div>
+      <div class="m-field"><span class="lbl">Credential yang Digunakan</span><textarea id="log-cred" rows="2" placeholder="(Optional) e.g. user=admin, pass=test123" style="width:100%;font-size:12px;padding:8px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg);color:var(--text);resize:vertical"></textarea></div>
+      <div class="m-field"><span class="lbl">Notes</span><textarea id="log-notes" rows="2" placeholder="(Optional) Catatan tambahan" style="width:100%;font-size:12px;padding:8px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg);color:var(--text);resize:vertical"></textarea></div>
+      <div class="m-foot" style="margin-top:.75rem">
+        <button onclick="closeModal('log-overlay')">Cancel</button>
+        <button class="bp" onclick="saveLog()">Simpan Log</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Copy toast -->
+<div class="copy-toast" id="copy-toast">Copied!</div>
 
 <!-- CSV Import modal -->
 <div class="modal-bg" id="import-overlay">
@@ -495,7 +575,7 @@ create policy "public_read" on qa_tracker_data
 <div class="modal-bg" id="form-overlay">
   <div class="modal form-modal" onclick="event.stopPropagation()">
     <div class="fm-header">
-      <div class="fm-icon" id="fm-icon">➕</div>
+      <div class="fm-icon" id="fm-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div>
       <div class="fm-title" id="fm-title">Add Test Case</div>
       <button class="fm-close" onclick="closeFormModal()" title="Close">✕</button>
     </div>
@@ -524,6 +604,11 @@ create policy "public_read" on qa_tracker_data
       </div>
     </div>
     <div class="fm-section">
+      <div class="fm-section-title">Test Credentials <span style="font-weight:400;color:var(--text3)">(Optional)</span></div>
+      <div id="cred-rows"></div>
+      <button type="button" class="cred-add-btn" onclick="addCredRow()">+ Tambah credential</button>
+    </div>
+    <div class="fm-section">
       <div class="fm-section-title">Outcome &amp; Evidence</div>
       <div class="fm-gbot">
         <div><span class="lbl">Notes</span><input id="fnotes" placeholder="Optional notes"></div>
@@ -533,13 +618,10 @@ create policy "public_read" on qa_tracker_data
       </div>
       <div>
         <span class="lbl">Screenshot evidence</span>
-        <div class="upzone"><input type="file" id="fimg" accept="image/*" onchange="handleImg(this)"><span id="ulbl">Click or drop image</span></div>
+        <div class="upzone"><input type="file" id="fimg" accept="image/*" multiple onchange="handleImg(this)"><span id="ulbl">Click, drop, or paste images</span></div>
+        <span style="font-size:10px;color:var(--text3);margin-top:3px;display:block">or paste from clipboard (Ctrl+V / ⌘+V), max 5 images</span>
       </div>
-      <div class="img-row" id="irow">
-        <img id="ithumb" style="height:40px;border-radius:5px;border:1px solid var(--bd2);flex-shrink:0">
-        <span id="iname" style="font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-        <button class="bd-btn" style="font-size:11px;padding:4px 10px;flex-shrink:0" onclick="removeImg()">✕ Remove image</button>
-      </div>
+      <div class="img-row" id="irow"></div>
     </div>
     <div class="m-foot">
       <button onclick="closeFormModal()" style="margin-right:auto">Cancel</button>
@@ -565,8 +647,8 @@ create policy "public_read" on qa_tracker_data
     <div style="display:flex;flex-direction:column;gap:3px;min-width:145px"><span class="lbl">Sort by</span><select id="fsort" onchange="resetPage();render()"><option value="order-desc">Order Desc</option><option value="order-asc" selected>Order Asc</option><option value="date-desc">Date Newest</option><option value="date-asc">Date Oldest</option></select></div>
     <div style="display:flex;flex-direction:column;gap:3px"><span class="lbl">Debug</span><label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;height:32px;border:1px solid var(--bd2);border-radius:var(--r);padding:0 10px;background:var(--bg);white-space:nowrap"><input type="checkbox" id="show-internal" onchange="render()" style="width:13px;height:13px"> Show orderID</label></div>
     <div style="display:flex;gap:6px;align-items:flex-end">
-      <button onclick="clearF()" style="font-size:11px;padding:5px 10px">Clear filters</button>
-      <button class="bd-btn" onclick="clearAll()" style="font-size:11px;padding:5px 10px" data-admin-only>Clear all</button>
+      <button onclick="clearF()" style="font-size:12px;padding:6px 14px;white-space:nowrap;flex-shrink:0">Clear filters</button>
+      <button class="bd-btn" onclick="clearAll()" data-admin-only style="font-size:12px;padding:6px 14px;white-space:nowrap;flex-shrink:0">Clear all</button>
     </div>
   </div>
   <div class="filter-info" id="fi2"></div>
@@ -630,7 +712,8 @@ create policy "public_read" on qa_tracker_data
 
 <script>
 /* ══════════════ STATE ══════════════ */
-let cases = [], editId = null, pImg = null, imgRemoved = false;
+let cases = [], editId = null, pImgs = [], imgRemoved = false;
+const MAX_EVIDENCE = 5;
 let sbUrl = '', sbKey = '', sbAnonKey = '', syncTimer = null; /* Supabase credentials */
 const SB_TABLE = 'qa_tracker_data';
 let SB_ROW_ID = 1; /* dynamic — set after user picks a data row */
@@ -652,7 +735,7 @@ let vcDataRows = []; /* [{id, name, description}] */
 function toggleDark() {
   const on = document.body.classList.toggle('dark');
   localStorage.setItem('qa_dark', on ? '1' : '');
-  document.getElementById('dm-btn').textContent = on ? '☀️' : '🌙';
+  document.getElementById('dm-btn').innerHTML = on ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
 }
 function applyDark() {
   const saved = localStorage.getItem('qa_dark');
@@ -660,7 +743,7 @@ function applyDark() {
   if (saved === '1' || (saved === null && prefersDark)) {
     document.body.classList.add('dark');
     const btn = document.getElementById('dm-btn');
-    if (btn) btn.textContent = '☀️';
+    if (btn) btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
   }
 }
 applyDark();
@@ -815,7 +898,7 @@ async function showDataSelectModal() {
   }
 
   if (!sbUrl || !sbAnonKey) {
-    listEl.innerHTML = '<div class="vc-empty">⚠️ No Supabase credentials configured.<br>Set HARDCODED_SB_URL / HARDCODED_SB_ANON or point GITHUB_CONFIG_URL to a config file.</div>';
+    listEl.innerHTML = '<div class="vc-empty"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> No Supabase credentials configured.<br>Set HARDCODED_SB_URL / HARDCODED_SB_ANON or point GITHUB_CONFIG_URL to a config file.</div>';
     return;
   }
 
@@ -842,7 +925,7 @@ function renderVcList(rows) {
   }
   listEl.innerHTML = rows.map(row => `
     <button class="vc-item" onclick="selectDataRow(${row.id})">
-      <div class="vc-item-icon">🗂️</div>
+      <div class="vc-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9L9.6 3.9A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></div>
       <div class="vc-item-body">
         <div class="vc-item-name">${esc(row.name || 'Unnamed')}</div>
         <div class="vc-item-desc">${esc(row.description || '—')}</div>
@@ -1045,10 +1128,16 @@ function saveLocal() { localStorage.setItem('qa_cases', JSON.stringify(cases)); 
 /* Strip base64 images from cloud payload — only keep Cloudinary URLs */
 function cloudPayload() {
   return cases.map(c => {
-    const isCdnUrl = c.img && c.img.startsWith('http');
-    const {img, ...rest} = c;
-    return isCdnUrl ? {...rest, img: c.img, imgName: c.imgName, hasImg: true}
-                    : {...rest, hasImg: !!c.img};
+    const {img, evidence, ...rest} = c;
+    const evArr = Array.isArray(evidence) ? evidence : getEvidence(c);
+    const cloudEvidence = evArr.filter(e => e.isCdn || (e.url||e.full||'').startsWith('http')).map(e => ({url: e.url||e.full, name: e.name, isCdn: true}));
+    const firstCdn = cloudEvidence[0];
+    return {...rest,
+      img: firstCdn ? firstCdn.url : null,
+      imgName: firstCdn ? firstCdn.name : null,
+      evidence: cloudEvidence,
+      hasImg: cloudEvidence.length > 0 || !!img
+    };
   });
 }
 
@@ -1089,8 +1178,15 @@ async function pull(silent) {
     const lmap = {}; cases.forEach(c => { lmap[c.id] = c; });
     cases = remote.map(rc => {
       const lc = lmap[rc.id];
-      const remoteIsUrl = rc.img && rc.img.startsWith('http');
-      return {...rc, img: remoteIsUrl ? rc.img : (lc ? lc.img||null : null), imgName: rc.imgName || (lc ? lc.imgName||null : null)};
+      const remoteEv = getEvidence(rc);
+      const localEv = lc ? getEvidence(lc) : [];
+      const mergedEv = remoteEv.length ? remoteEv : localEv;
+      const first = mergedEv[0];
+      return {...rc,
+        evidence: mergedEv.map(e => ({url: e.full, name: e.name, isCdn: !!e.isCdn})),
+        img: first ? first.full : null,
+        imgName: first ? first.name : (lc ? lc.imgName||null : null)
+      };
     });
     saveLocal(); render(); syncBadge('ok', 'Synced ✓');
   } catch(e) { syncBadge('err', 'Fetch error'); }
@@ -1191,34 +1287,67 @@ function storeImgLocal(file) {
 }
 
 async function handleImg(inp) {
-  const file = inp.files[0]; if (!file) return;
+  const files = Array.from(inp.files || []); if (!files.length) return;
+  const slots = Math.max(0, MAX_EVIDENCE - pImgs.length);
+  if (!slots) { g('ulbl').textContent = 'Max ' + MAX_EVIDENCE + ' images'; return; }
+  const useFiles = files.slice(0, slots);
   g('ulbl').textContent = 'Uploading…';
-  let result = null;
-  if (cdnCloud && cdnPreset) {
-    /* Upload to Cloudinary and get back a URL */
-    const cdn = await uploadToCdn(file);
-    if (cdn) {
-      result = {full: cdn.url, name: cdn.name, isCdn: true};
+  for (const file of useFiles) {
+    let result = null;
+    if (cdnCloud && cdnPreset) {
+      const cdn = await uploadToCdn(file);
+      result = cdn ? {full: cdn.url, name: cdn.name, isCdn: true} : await storeImgLocal(file);
     } else {
-      g('ulbl').textContent = 'Cloudinary failed, storing locally…';
       result = await storeImgLocal(file);
     }
-  } else {
-    result = await storeImgLocal(file);
+    if (result) pImgs.push(result);
   }
-  if (!result) { g('ulbl').textContent = 'Click or drop image'; return; }
-  pImg = result; imgRemoved = false;
-  /* Preview: use a thumbnail-sized version for the form preview (not full Cloudinary URL for thumbnail) */
-  const thumbSrc = result.isCdn
-    ? result.full.replace('/upload/', '/upload/w_200,h_120,c_fill/') /* Cloudinary transformation */
-    : result.full;
-  g('ithumb').src = thumbSrc;
-  g('iname').textContent = result.name + (result.isCdn ? ' (Cloudinary)' : ' (local)');
-  g('irow').style.display = 'flex';
-  g('ulbl').textContent = 'Replace image';
+  imgRemoved = false;
+  renderEvidencePreview();
+  g('fimg').value = '';
 }
-function removeImg() { pImg = null; imgRemoved = true; g('fimg').value = ''; g('ulbl').textContent = 'Click or drop image'; g('irow').style.display = 'none'; }
-function resetImg() { pImg = null; imgRemoved = false; g('fimg').value = ''; g('ulbl').textContent = 'Click or drop image'; g('irow').style.display = 'none'; }
+function getEvidence(c) {
+  if (!c) return [];
+  if (Array.isArray(c.evidence)) return c.evidence.filter(e => e && (e.full || e.url || e.img)).map(e => ({full: e.full || e.url || e.img, name: e.name || e.imgName || 'screenshot', isCdn: !!e.isCdn || !!((e.full || e.url || e.img || '').startsWith('http'))}));
+  return c.img ? [{full: c.img, name: c.imgName || 'screenshot', isCdn: c.img.startsWith('http')}] : [];
+}
+function evidenceThumbSrc(ev) { return ev && ev.isCdn ? ev.full.replace('/upload/', '/upload/w_200,h_120,c_fill/') : (ev ? ev.full : ''); }
+function renderEvidencePreview() {
+  const row = g('irow');
+  if (!row) return;
+  if (!pImgs.length) { row.innerHTML = ''; row.style.display = 'none'; g('ulbl').textContent = 'Click, drop, or paste images'; return; }
+  row.innerHTML = pImgs.map((ev, idx) => `
+    <div class="evi-chip">
+      <img src="${evidenceThumbSrc(ev)}" title="${esc(ev.name)}">
+      <span>${esc(ev.name)}${ev.isCdn ? ' (Cloudinary)' : ' (local)'}</span>
+      <button type="button" onclick="removeImg(${idx})" title="Remove image">✕</button>
+    </div>
+  `).join('');
+  row.style.display = 'flex';
+  g('ulbl').textContent = pImgs.length >= MAX_EVIDENCE ? 'Max ' + MAX_EVIDENCE + ' images' : 'Add more images';
+}
+function removeImg(idx) { if (typeof idx === 'number') pImgs.splice(idx, 1); else pImgs = []; imgRemoved = true; g('fimg').value = ''; renderEvidencePreview(); }
+function resetImg() { pImgs = []; imgRemoved = false; g('fimg').value = ''; renderEvidencePreview(); }
+
+/* ── Clipboard paste image support ── */
+document.addEventListener('paste', function(e) {
+  const overlay = g('form-overlay');
+  if (!overlay || !overlay.classList.contains('on')) return;
+  const items = (e.clipboardData || e.originalEvent.clipboardData || {}).items;
+  if (!items) return;
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].type.startsWith('image/')) {
+      e.preventDefault();
+      const blob = items[i].getAsFile();
+      if (!blob) return;
+      const ext = blob.type.split('/')[1] || 'png';
+      const fname = 'clipboard-' + Date.now() + '.' + ext;
+      const file = new File([blob], fname, {type: blob.type});
+      handleImg({files: [file]});
+      return;
+    }
+  }
+});
 
 /* ══════════════ FORM MODAL ══════════════ */
 function openFormModal(mode, id) {
@@ -1226,7 +1355,7 @@ function openFormModal(mode, id) {
   const icon = g('fm-icon'), title = g('fm-title'), btnSave = g('btn-save');
   if (mode === 'add') {
     editId = null;
-    icon.className = 'fm-icon add'; icon.textContent = '➕';
+    icon.className = 'fm-icon add'; icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>';
     title.textContent = 'Add Test Case';
     btnSave.textContent = '+ Add test case';
     g('rb').classList.remove('on');
@@ -1234,10 +1363,11 @@ function openFormModal(mode, id) {
     const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
     ['ftid','fn','fscen','fm','fi','fe','fa','fnotes'].forEach(x => { const el = g(x); if (el) el.value = ''; });
     g('fp').value = 'Medium'; g('ftype').value = 'Positive'; g('fenv').value = 'Staging'; g('fst').value = 'Pass';
+    renderCredRows([]);
   } else if (mode === 'edit' && id) {
     editId = id;
     const c = cases.find(x => x.id === id); if (!c) return;
-    icon.className = 'fm-icon edit'; icon.textContent = '✏️';
+    icon.className = 'fm-icon edit'; icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>';
     title.textContent = 'Edit Test Case';
     btnSave.textContent = '✓ Save changes';
     g('rb').classList.remove('on');
@@ -1255,16 +1385,14 @@ function openFormModal(mode, id) {
     g('fst').value = c.status || 'Pass';
     g('fd').value = c.date || '';
     g('ft').value = c.time || '';
-    if (c.img) {
-      pImg = {full: c.img, name: c.imgName || 'existing', isCdn: c.img.startsWith('http')};
-      g('ithumb').src = c.img; g('iname').textContent = c.imgName || 'existing'; g('irow').style.display = 'flex';
-      g('ulbl').textContent = 'Replace image';
-    } else { resetImg(); }
+    pImgs = getEvidence(c);
+    renderEvidencePreview();
     imgRemoved = false;
+    renderCredRows(c.credentials || []);
   } else if (mode === 'retest' && id) {
     editId = null;
     const c = cases.find(x => x.id === id); if (!c) return;
-    icon.className = 'fm-icon retest'; icon.textContent = '🔄';
+    icon.className = 'fm-icon retest'; icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>';
     title.textContent = 'Retest Case';
     btnSave.textContent = '↺ Save retest';
     g('rb').classList.add('on');
@@ -1281,6 +1409,7 @@ function openFormModal(mode, id) {
     g('fa').value = ''; g('fnotes').value = ''; g('fst').value = 'Pass';
     const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
     resetImg();
+    renderCredRows(c.credentials || []);
   }
   overlay.classList.add('on');
   document.body.style.overflow = 'hidden';
@@ -1300,8 +1429,9 @@ function clearForm() {
   ['ftid','fn','fscen','fm','fi','fe','fa','fnotes'].forEach(x => { const el = g(x); if (el) el.value = ''; });
   g('fp').value = 'Medium'; g('ftype').value = 'Positive'; g('fenv').value = 'Staging'; g('fst').value = 'Pass';
   const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
+  renderCredRows([]);
   const icon = g('fm-icon'), title = g('fm-title'), btnSave = g('btn-save');
-  if (icon) { icon.className = 'fm-icon add'; icon.textContent = '➕'; }
+  if (icon) { icon.className = 'fm-icon add'; icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>'; }
   if (title) title.textContent = 'Add Test Case';
   if (btnSave) btnSave.textContent = '+ Add test case';
 }
@@ -1309,6 +1439,131 @@ function clearForm() {
 function editCase(id) { openFormModal('edit', id); }
 function retestCase(id) { openFormModal('retest', id); }
 function editFromDetail() { const id = detailOpenId; closeModal('detail-overlay'); openFormModal('edit', id); }
+
+/* ══════════════ CREDENTIAL ROWS (FORM) ══════════════ */
+function renderCredRows(creds) {
+  const container = g('cred-rows');
+  container.innerHTML = '';
+  if (creds && creds.length) {
+    creds.forEach(cr => addCredRow(cr.key, cr.value));
+  }
+}
+function addCredRow(key, value) {
+  const container = g('cred-rows');
+  const row = document.createElement('div');
+  row.className = 'cred-input-row';
+  row.innerHTML = `<input class="cred-k" placeholder="Key (e.g. Username)" value="${esc(key||'')}"><input class="cred-v" placeholder="Value (e.g. admin@test.com)" value="${esc(value||'')}"><button type="button" class="cred-rm" onclick="this.parentElement.remove()" title="Hapus">✕</button>`;
+  container.appendChild(row);
+}
+
+/* ══════════════ CREDENTIAL COPY (DETAIL) ══════════════ */
+function toggleCredSection(el) {
+  const collapse = el.nextElementSibling;
+  const chevron = el.querySelector('.cred-chevron');
+  const isOpen = collapse.style.maxHeight && collapse.style.maxHeight !== '0px';
+  if (isOpen) {
+    collapse.style.maxHeight = '0';
+    chevron.style.transform = 'rotate(0deg)';
+  } else {
+    collapse.style.maxHeight = collapse.scrollHeight + 'px';
+    chevron.style.transform = 'rotate(90deg)';
+  }
+}
+function copyCredFromCase(caseId, idx) {
+  const c = cases.find(x => x.id === caseId);
+  if (!c || !c.credentials || !c.credentials[idx]) return;
+  copyCredential(c.credentials[idx].value);
+}
+function copyCredential(val) {
+  navigator.clipboard.writeText(val).then(() => {
+    const toast = g('copy-toast');
+    toast.classList.add('on');
+    setTimeout(() => toast.classList.remove('on'), 1500);
+  }).catch(() => {
+    /* Fallback for older browsers */
+    const ta = document.createElement('textarea');
+    ta.value = val; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    const toast = g('copy-toast');
+    toast.classList.add('on');
+    setTimeout(() => toast.classList.remove('on'), 1500);
+  });
+}
+
+/* ══════════════ LOG HISTORY ══════════════ */
+let logTargetCaseId = null;
+
+function openLogModal(caseId) {
+  logTargetCaseId = caseId;
+  const n = u7();
+  g('log-date').value = n.date;
+  g('log-time').value = n.time;
+  g('log-desc').value = '';
+  g('log-cred').value = '';
+  g('log-notes').value = '';
+  openModal('log-overlay');
+}
+
+function toggleLogSection(el) {
+  const body = el.nextElementSibling;
+  const chev = el.querySelector('.log-chevron');
+  if (!body) return;
+  const on = body.classList.toggle('on');
+  if (chev) chev.style.transform = on ? 'rotate(90deg)' : 'rotate(0deg)';
+}
+
+function loadMoreLogs(caseId) {
+  const c = cases.find(x => x.id === caseId);
+  if (!c || !c.logs) return;
+  const sorted = [...c.logs].sort((a,b) => (b.id||0) - (a.id||0));
+  const timeline = g('log-timeline-' + caseId);
+  if (!timeline) return;
+  timeline.innerHTML = sorted.map(log => `
+    <div class="log-card">
+      <div class="log-card-header">
+        <span class="log-card-date">${esc(log.date||'')}${log.time ? ' · ' + esc(log.time) : ''}</span>
+        ${currentRole === 'admin' ? `<button class="log-card-del" onclick="deleteLog('${c.id}','${log.id}')" title="Hapus log"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>` : ''}
+      </div>
+      <div class="log-card-body">${esc(log.description||'—')}</div>
+      ${log.credentials ? `<div class="log-card-field"><strong>Credential:</strong> ${esc(log.credentials)}</div>` : ''}
+      ${log.notes ? `<div class="log-card-field"><strong>Notes:</strong> ${esc(log.notes)}</div>` : ''}
+    </div>
+  `).join('');
+  /* Hide load more button */
+  const btn = timeline.nextElementSibling;
+  if (btn && btn.textContent.includes('lainnya')) btn.style.display = 'none';
+}
+
+function saveLog() {
+  const desc = g('log-desc').value.trim();
+  if (!desc) { g('log-desc').focus(); return; }
+  const c = cases.find(x => x.id === logTargetCaseId);
+  if (!c) return;
+  if (!c.logs) c.logs = [];
+  c.logs.push({
+    id: Date.now() + '',
+    date: g('log-date').value,
+    time: g('log-time').value,
+    description: desc,
+    credentials: g('log-cred').value.trim(),
+    notes: g('log-notes').value.trim()
+  });
+  saveLocal(); push();
+  closeModal('log-overlay');
+  /* Refresh detail view */
+  openDetail(logTargetCaseId);
+}
+
+function deleteLog(caseId, logId) {
+  if (!confirm('Hapus log ini?')) return;
+  const c = cases.find(x => x.id === caseId);
+  if (!c || !c.logs) return;
+  c.logs = c.logs.filter(l => l.id !== logId);
+  saveLocal(); push();
+  /* Refresh detail view */
+  openDetail(caseId);
+}
 
 /* ══════════════ FORM CRUD ══════════════ */
 function buildTCList() {
@@ -1321,6 +1576,14 @@ function saveCase() {
   if (!name) { g('fn').focus(); return; }
   const ex = editId ? cases.find(c => c.id === editId) : null;
   const n = u7();
+  /* Collect credentials from form */
+  const credEls = document.querySelectorAll('#cred-rows .cred-input-row');
+  const credentials = [];
+  credEls.forEach(row => {
+    const k = row.querySelector('.cred-k').value.trim();
+    const v = row.querySelector('.cred-v').value.trim();
+    if (k || v) credentials.push({ key: k, value: v });
+  });
   const obj = {
     id: editId || Date.now()+'', testId: tid, name,
     scenario: g('fscen').value.trim(), module: g('fm').value.trim(),
@@ -1329,9 +1592,12 @@ function saveCase() {
     status: g('fst').value, notes: g('fnotes').value.trim(),
     date: editId && ex ? ex.date : n.date,
     time: editId && ex ? ex.time : n.time,
-    orderId: editId && ex ? ex.orderId : 0, /* 0 = placed at front; reassigned by ensureOrderIds */
-    img: pImg ? pImg.full : imgRemoved ? null : (ex ? ex.img||null : null),
-    imgName: pImg ? pImg.name : imgRemoved ? null : (ex ? ex.imgName||null : null),
+    orderId: editId && ex ? ex.orderId : 0,
+    img: pImgs.length ? pImgs[0].full : imgRemoved ? null : (ex ? ex.img||null : null),
+    imgName: pImgs.length ? pImgs[0].name : imgRemoved ? null : (ex ? ex.imgName||null : null),
+    evidence: pImgs.length ? pImgs.map(e => ({url: e.full, name: e.name, isCdn: !!e.isCdn})) : imgRemoved ? [] : (ex ? ex.evidence || getEvidence(ex) : []),
+    credentials: credentials.length ? credentials : (ex ? ex.credentials || [] : []),
+    logs: ex ? ex.logs || [] : [],
   };
   if (editId) { const i = cases.findIndex(c => c.id === editId); if (i > -1) cases[i] = obj; editId = null; }
   else { obj.orderId = 0; cases.unshift(obj); ensureOrderIds(); }
@@ -1360,7 +1626,7 @@ function openDetail(id) {
   const typeLabel = (c.type||'Positive') === 'Positive' ? '+ Positive' : '− Negative';
 
   /* Status icon */
-  const stIcon = c.status === 'Pass' ? '✅' : c.status === 'Fail' ? '❌' : '🔄';
+  const stIcon = c.status === 'Pass' ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>' : c.status === 'Fail' ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>';
 
   g('detail-body').innerHTML = `
     <!-- Status Row -->
@@ -1413,23 +1679,93 @@ function openDetail(id) {
           ${c.notes ? `<div class="dm-total-sub clamp2" title="${esc(c.notes)}">Catatan: ${esc(c.notes)}</div>` : ''}<!-- ← clamp2 + title added -->
     </div>
 
-    <!-- Screenshot (if any) -->
-    ${c.img ? `
+    <!-- Screenshot / Evidence gallery -->
+    ${(function(){
+      const evs = getEvidence(c);
+      if (!evs.length) return '';
+      return `<div class="dm-section">
+      <div class="dm-section-title">Screenshot / Evidence (${evs.length})</div>
+      <div class="evi-gallery" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+        ${evs.map((ev, idx) => `<div class="evi-gallery-item" style="position:relative;cursor:zoom-in" onclick="openPPev('${c.id}',${idx})">
+          <img src="${ev.full}" style="max-height:120px;max-width:160px;border-radius:8px;border:1px solid var(--bd);object-fit:contain;display:block" title="${esc(ev.name)}">
+          <p style="font-size:10px;color:var(--text3);margin-top:3px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> ${esc(ev.name)}</p>
+        </div>`).join('')}
+      </div>
+    </div>`;
+    })()}
+
+    <!-- Credentials (if any) — collapsible, default collapsed -->
+    ${(c.credentials && c.credentials.length) ? `
     <div class="dm-section">
-      <div class="dm-section-title">Screenshot / Evidence</div>
-      <div style="margin-top:4px">
-        <img src="${c.img}" onclick="openPP('${c.id}')" style="max-height:160px;max-width:100%;border-radius:8px;border:1px solid var(--bd);cursor:zoom-in;object-fit:contain;display:block" title="Click to view full size">
-        <p style="font-size:11px;color:var(--text3);margin-top:6px">📎 ${esc(c.imgName||'screenshot')} — click to zoom</p>
+      <div class="dm-section-title cred-toggle" onclick="toggleCredSection(this)" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none">
+        <span>Credential Test</span>
+        <span class="cred-chevron" style="font-size:12px;transition:transform .2s">▶</span>
+      </div>
+      <div class="cred-collapse" style="max-height:0;overflow:hidden;transition:max-height .25s ease">
+        <div class="cred-display">
+          ${c.credentials.map((cr, idx) => `
+            <div class="cred-item">
+              <span class="cred-key">${esc(cr.key)}</span>
+              <span class="cred-val">${esc(cr.value)}</span>
+              <button class="cred-copy" onclick="copyCredFromCase('${c.id}',${idx})" title="Copy value" aria-label="Copy credential value"></button>
+            </div>
+          `).join('')}
+        </div>
       </div>
     </div>` : ''}
+
+    <!-- Log Riwayat Pengujian -->
+    <div class="dm-section">
+      <div class="dm-section-title log-toggle" onclick="toggleLogSection(this)">
+        <span>Log Riwayat Pengujian</span>
+        <span class="log-toggle-meta">${(c.logs && c.logs.length) ? c.logs.length + ' log' : '0 log'}</span>
+        <span class="log-chevron">▶</span>
+      </div>
+      <div class="log-collapse">
+      ${(c.logs && c.logs.length) ? `
+        <div class="log-timeline" id="log-timeline-${c.id}">
+          ${[...c.logs].sort((a,b) => (b.id||0) - (a.id||0)).slice(0, 3).map(log => `
+            <div class="log-card">
+              <div class="log-card-header">
+                <span class="log-card-date">${esc(log.date||'')}${log.time ? ' · ' + esc(log.time) : ''}</span>
+          ${currentRole === 'admin' ? `<button class="log-card-del" onclick="deleteLog('${c.id}','${log.id}')" title="Hapus log"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>` : ''}
+              </div>
+              <div class="log-card-body">${esc(log.description||'—')}</div>
+              ${log.credentials ? `<div class="log-card-field"><strong>Credential:</strong> ${esc(log.credentials)}</div>` : ''}
+              ${log.notes ? `<div class="log-card-field"><strong>Notes:</strong> ${esc(log.notes)}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+        ${c.logs.length > 3 ? `<button class="log-add-btn" style="margin-top:4px" onclick="loadMoreLogs('${c.id}')">Lihat ${c.logs.length - 3} log lainnya...</button>` : ''}
+      ` : `<div class="log-empty">Belum ada log pengujian</div>`}
+      </div>
+      ${currentRole === 'admin' ? `<button class="log-add-btn" onclick="openLogModal('${c.id}')" data-admin-only>+ Tambah Log</button>` : ''}
+    </div>
   `;
   openModal('detail-overlay');
 }
 
 
 /* ══════════════ IMAGE PREVIEW (FULL RES + ZOOM) ══════════════ */
+function openPPev(id, idx) {
+  const c = cases.find(x => x.id === id); if (!c) return;
+  const evs = getEvidence(c);
+  const ev = evs[idx]; if (!ev) return;
+  g('pp-img').src = ev.full;
+  g('pp-meta').textContent = (c.testId||'') + (c.testId?' · ':'') + (c.name||'') + ' — ' + (ev.name||'screenshot') + (evs.length > 1 ? ' (' + (idx+1) + '/' + evs.length + ')' : '');
+  g('pp-dl').href = ev.full;
+  g('pp-dl').download = (ev.name || 'evidence_' + (c.testId||c.id) + '_' + idx);
+  ppZoomLevel = 1;
+  g('pp').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  const img = g('pp-img');
+  if (img.complete && img.naturalWidth) { ppZoomFit(); } else { img.onload = () => ppZoomFit(); }
+}
 function openPP(id) {
-  const c = cases.find(x => x.id === id); if (!c || !c.img) return;
+  const c = cases.find(x => x.id === id); if (!c) return;
+  const evs = getEvidence(c);
+  if (evs.length) { openPPev(id, 0); return; }
+  if (!c.img) return;
   g('pp-img').src = c.img;
   g('pp-meta').textContent = (c.testId||'') + (c.testId?' · ':'') + (c.name||'') + ' — ' + (c.imgName||'screenshot');
   g('pp-dl').href = c.img;
@@ -1437,13 +1773,8 @@ function openPP(id) {
   ppZoomLevel = 1;
   g('pp').classList.add('on');
   document.body.style.overflow = 'hidden';
-  /* Wait for image to load so natural dimensions are available, then fit */
   const img = g('pp-img');
-  if (img.complete && img.naturalWidth) {
-    ppZoomFit();
-  } else {
-    img.onload = () => ppZoomFit();
-  }
+  if (img.complete && img.naturalWidth) { ppZoomFit(); } else { img.onload = () => ppZoomFit(); }
 }
 function closePP() { g('pp').classList.remove('on'); g('pp-img').src = ''; document.body.style.overflow = ''; }
 function handlePPClick(e) { if (e.target === g('pp') || e.target === g('pp-canvas')) closePP(); }
@@ -1735,9 +2066,9 @@ function render() {
   const filtered = isFiltered() && fTotal !== total;
   const cnt = (arr, pred) => arr.filter(pred).length;
   const fPass = cnt(f, c => c.status === 'Pass'), fFail = cnt(f, c => c.status === 'Fail'), fIt = cnt(f, c => c.status === 'In Test');
-  const fPos = cnt(f, c => (c.type||'Positive') === 'Positive'), fNeg = cnt(f, c => c.type === 'Negative'), fEv = cnt(f, c => c.img);
+  const fPos = cnt(f, c => (c.type||'Positive') === 'Positive'), fNeg = cnt(f, c => c.type === 'Negative'), fEv = cnt(f, c => getEvidence(c).length > 0 || c.img);
   const tPass = cnt(cases, c => c.status === 'Pass'), tFail = cnt(cases, c => c.status === 'Fail'), tIt = cnt(cases, c => c.status === 'In Test');
-  const tPos = cnt(cases, c => (c.type||'Positive') === 'Positive'), tNeg = cnt(cases, c => c.type === 'Negative'), tEv = cnt(cases, c => c.img);
+  const tPos = cnt(cases, c => (c.type||'Positive') === 'Positive'), tNeg = cnt(cases, c => c.type === 'Negative'), tEv = cnt(cases, c => getEvidence(c).length > 0 || c.img);
   const rate = fTotal > 0 ? Math.round(fPass / fTotal * 100) : null;
 
   function sm(mc, mv, ms, val, tot, filt) { g(mc).classList.toggle('filtered', filt); g(mv).textContent = val; g(ms).textContent = filt ? 'of '+tot+' total' : ''; }
@@ -1781,7 +2112,8 @@ function render() {
     const priCls = pri === 'High' ? 'bhi' : pri === 'Low' ? 'blo' : 'bmed';
     const stCls = c.status === 'Pass' ? 'pass' : c.status === 'Fail' ? 'fail' : 'intest';
     const envCls = env === 'Production' ? 'bprod' : 'bstag';
-    const thumb = c.img ? `<img class="thumb" src="${c.img}" onclick="openPP('${c.id}')" title="View full screenshot">` : `<span style="color:var(--text3);font-size:11px">—</span>`;
+    const evs = getEvidence(c);
+    const thumb = evs.length ? `<span class="thumb-wrap"><img class="thumb" src="${evidenceThumbSrc(evs[0])}" onclick="openPPev('${c.id}',0)" title="View evidence (${evs.length})">${evs.length > 1 ? `<span class="thumb-count">${evs.length}</span>` : ''}</span>` : `<span style="color:var(--text3);font-size:11px">—</span>`;
     const trClass = isE ? 'hl' : isSel ? 'selected' : '';
     const dragAttrs = reorderMode ? `draggable="true" ondragstart="onDragStart(event,'${c.id}')" ondragend="onDragEnd(event)" ondragover="onDragOver(event,'${c.id}')" ondrop="onDrop(event,'${c.id}')"` : '';
     const firstCell = reorderMode
@@ -1826,8 +2158,11 @@ function render() {
 function buildCSV(data) {
   const dt = u7dt();
   const header = ['# QA Test Results', '# Exported: '+dt+' (UTC+7)', '# Total rows: '+data.length, ''];
-  const cols = ['Date','Time (UTC+7)','Test ID','Name','Scenario','Module','Priority','Type','Environment','Input Data','Expected','Actual','Status','Notes','Has Evidence'];
-  const rows = data.map(c => [fmt(c.date),c.time||'',c.testId||'',c.name,c.scenario||'',c.module,c.priority,c.type||'Positive',c.env||'Staging',c.input,c.expected,c.actual,c.status,c.notes,c.img?'Yes':'No'].map(v => '"'+(v||'').replace(/"/g,'""')+'"').join(','));
+  const cols = ['Date','Time (UTC+7)','Test ID','Name','Scenario','Module','Priority','Type','Environment','Input Data','Expected','Actual','Status','Notes','Evidence Count','Evidence','Credentials','Logs'];
+  const rows = data.map(c => {
+    const evs = getEvidence(c);
+    return [fmt(c.date),c.time||'',c.testId||'',c.name,c.scenario||'',c.module,c.priority,c.type||'Positive',c.env||'Staging',c.input,c.expected,c.actual,c.status,c.notes,evs.length+'',JSON.stringify(evs.map(e=>({name:e.name,url:e.isCdn?e.full:''}))),JSON.stringify(c.credentials||[]),JSON.stringify(c.logs||[])].map(v => '"'+(v||'').replace(/"/g,'""')+'"').join(',');
+  });
   const t = data.length, p = data.filter(c => c.status === 'Pass').length, it = data.filter(c => c.status === 'In Test').length;
   const summary = ['','"--- Summary ---"', `"Total","${t}"`,`"Pass","${p}"`,`"Fail","${t-p-it}"`,`"In Test","${it}"`,`"Pass rate","${t>0?Math.round(p/t*100):0}%"`,`"Exported at","${dt} UTC+7"`];
   return header.join('\n') + cols.join(',') + '\n' + rows.join('\n') + '\n' + summary.join('\n');
