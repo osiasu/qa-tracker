@@ -321,7 +321,8 @@ body.dark .copy-toast{background:#f0f0f0;color:#111}
 .log-card::before{content:'';position:absolute;left:-15px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--c-blue);border:2px solid var(--bg);box-shadow:0 0 0 2px var(--bd2)}
 .log-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .log-card-date{font-size:11px;font-weight:600;color:var(--text2)}
-.log-card-del{width:22px;height:22px;border-radius:50%;border:1px solid transparent;background:transparent;color:var(--text3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:background .12s,color .12s}
+.log-card-del{width:22px;height:22px;border-radius:50%;border:1px solid transparent;background:transparent;color:var(--text3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0;line-height:0;flex-shrink:0;transition:background .12s,color .12s,border-color .12s}
+.log-card-del svg{display:block;width:13px;height:13px;flex-shrink:0}
 .log-card-del:hover{background:var(--bg-danger);color:var(--c-danger);border-color:#f09595}
 .log-card-body{font-size:12px;color:var(--text);line-height:1.5}
 .log-card-field{margin-top:4px;font-size:11px;color:var(--text2)}
