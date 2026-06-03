@@ -299,6 +299,11 @@ body.role-view #reorder-btn{display:none!important}
 .cred-input-row .cred-rm{width:28px;height:28px;border-radius:50%;border:1px solid var(--bd2);background:var(--bg2);color:var(--c-danger);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cred-input-row .cred-rm:hover{background:var(--bg-danger)}
 .cred-add-btn{font-size:11px;padding:4px 10px;margin-top:4px;color:var(--c-info);border-color:#85b7eb;background:var(--bg-info)}
+/* ── Step rows (form) ── */
+.step-input-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.step-input-row input{flex:1;font-size:12px}
+.step-input-row .step-rm{width:28px;height:28px;border-radius:50%;border:1px solid var(--bd2);background:var(--bg2);color:var(--c-danger);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-input-row .step-rm:hover{background:var(--bg-danger)}
 /* ── Credential display (detail modal) ── */
 .cred-display{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .cred-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);font-size:12px}
@@ -483,7 +488,7 @@ create policy "public_read" on qa_tracker_data
       <div class="m-field"><span class="lbl">Waktu <span class="tz">UTC+7</span></span><input id="log-time" readonly></div>
       <div class="m-field"><span class="lbl">Deskripsi Pengujian *</span><textarea id="log-desc" rows="3" placeholder="Deskripsi aktivitas pengujian..." style="width:100%;font-size:12px;padding:8px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg);color:var(--text);resize:vertical"></textarea></div>
       <div class="m-field"><span class="lbl">Credential yang Digunakan</span><textarea id="log-cred" rows="2" placeholder="(Optional) e.g. user=admin, pass=test123" style="width:100%;font-size:12px;padding:8px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg);color:var(--text);resize:vertical"></textarea></div>
-      <div class="m-field"><span class="lbl">Notes</span><textarea id="log-notes" rows="2" placeholder="(Optional) Catatan tambahan" style="width:100%;font-size:12px;padding:8px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg);color:var(--text);resize:vertical"></textarea></div>
+      <div class="m-field"><span class="lbl">Notes <span style="font-weight:400;color:var(--text3)">(Optional)</span></span><div id="log-notes-rows"></div><button type="button" class="cred-add-btn" onclick="addLogNoteRow()">+ Tambah note</button></div>
       <div class="m-foot" style="margin-top:.75rem">
         <button onclick="closeModal('log-overlay')">Cancel</button>
         <button class="bp" onclick="saveLog()">Simpan Log</button>
@@ -603,6 +608,11 @@ create policy "public_read" on qa_tracker_data
         <div><span class="lbl">Expected result</span><input id="fe" placeholder="e.g. Redirect to dashboard"></div>
         <div><span class="lbl">Actual result</span><input id="fa" placeholder="e.g. Error 403 shown"></div>
       </div>
+    </div>
+    <div class="fm-section">
+      <div class="fm-section-title">Steps to Reproduce <span style="font-weight:400;color:var(--text3)">(Optional)</span></div>
+      <div id="steps-rows"></div>
+      <button type="button" class="cred-add-btn" onclick="addStepRow()">+ Tambah step</button>
     </div>
     <div class="fm-section">
       <div class="fm-section-title">Test Credentials <span style="font-weight:400;color:var(--text3)">(Optional)</span></div>
@@ -1364,7 +1374,7 @@ function openFormModal(mode, id) {
     const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
     ['ftid','fn','fscen','fm','fi','fe','fa','fnotes'].forEach(x => { const el = g(x); if (el) el.value = ''; });
     g('fp').value = 'Medium'; g('ftype').value = 'Positive'; g('fenv').value = 'Staging'; g('fst').value = 'Pass';
-    renderCredRows([]);
+    renderCredRows([]); renderStepRows([]);
   } else if (mode === 'edit' && id) {
     editId = id;
     const c = cases.find(x => x.id === id); if (!c) return;
@@ -1389,7 +1399,7 @@ function openFormModal(mode, id) {
     pImgs = getEvidence(c);
     renderEvidencePreview();
     imgRemoved = false;
-    renderCredRows(c.credentials || []);
+    renderCredRows(c.credentials || []); renderStepRows(c.steps || []);
   } else if (mode === 'retest' && id) {
     editId = null;
     const c = cases.find(x => x.id === id); if (!c) return;
@@ -1410,7 +1420,7 @@ function openFormModal(mode, id) {
     g('fa').value = ''; g('fnotes').value = ''; g('fst').value = 'Pass';
     const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
     resetImg();
-    renderCredRows(c.credentials || []);
+    renderCredRows(c.credentials || []); renderStepRows(c.steps || []);
   }
   overlay.classList.add('on');
   document.body.style.overflow = 'hidden';
@@ -1430,7 +1440,7 @@ function clearForm() {
   ['ftid','fn','fscen','fm','fi','fe','fa','fnotes'].forEach(x => { const el = g(x); if (el) el.value = ''; });
   g('fp').value = 'Medium'; g('ftype').value = 'Positive'; g('fenv').value = 'Staging'; g('fst').value = 'Pass';
   const n = u7(); g('fd').value = n.date; g('ft').value = n.time;
-  renderCredRows([]);
+  renderCredRows([]); renderStepRows([]);
   const icon = g('fm-icon'), title = g('fm-title'), btnSave = g('btn-save');
   if (icon) { icon.className = 'fm-icon add'; icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>'; }
   if (title) title.textContent = 'Add Test Case';
@@ -1492,6 +1502,42 @@ function copyCredential(val) {
   });
 }
 
+/* ══════════════ NOTES / STEP ROW HELPERS ══════════════ */
+function renderLogNotes(notes) {
+  if (!notes) return '';
+  const arr = Array.isArray(notes) ? notes : [notes];
+  return '<ol style="margin:4px 0 0 18px;padding:0">' + arr.map(n => '<li style="font-size:11px;padding:2px 0">' + esc(n) + '</li>').join('') + '</ol>';
+}
+function addLogNoteRow(value) {
+  const c = g('log-notes-rows');
+  const row = document.createElement('div');
+  row.className = 'step-input-row';
+  const num = c.children.length + 1;
+  row.innerHTML = `<span style="font-weight:600;font-size:12px;color:var(--text2);min-width:20px">${num}.</span><input class="step-input" placeholder="e.g. Tested on Chrome v120" value="${esc(value||'')}" style="flex:1"><button type="button" class="step-rm" onclick="this.parentElement.remove();renumberLogNoteRows()">✕</button>`;
+  c.appendChild(row);
+}
+function renumberLogNoteRows() {
+  const rows = document.querySelectorAll('#log-notes-rows .step-input-row');
+  rows.forEach((r,i) => { const num = r.querySelector('span'); if (num) num.textContent = (i+1) + '.'; });
+}
+
+function addStepRow(value) {
+  const c = g('steps-rows');
+  const row = document.createElement('div');
+  row.className = 'step-input-row';
+  const num = c.children.length + 1;
+  row.innerHTML = `<span style="font-weight:600;font-size:12px;color:var(--text2);min-width:20px">${num}.</span><input class="step-input" placeholder="e.g. Open browser and navigate to login page" value="${esc(value||'')}" style="flex:1"><button type="button" class="step-rm" onclick="this.parentElement.remove();renumberStepRows()">✕</button>`;
+  c.appendChild(row);
+}
+function renumberStepRows() {
+  const rows = document.querySelectorAll('#steps-rows .step-input-row');
+  rows.forEach((r,i) => { const num = r.querySelector('span'); if (num) num.textContent = (i+1) + '.'; });
+}
+function renderStepRows(steps) {
+  const c = g('steps-rows'); c.innerHTML = '';
+  if (steps && steps.length) steps.forEach(s => addStepRow(s));
+}
+
 /* ══════════════ LOG HISTORY ══════════════ */
 let logTargetCaseId = null;
 
@@ -1502,7 +1548,7 @@ function openLogModal(caseId) {
   g('log-time').value = n.time;
   g('log-desc').value = '';
   g('log-cred').value = '';
-  g('log-notes').value = '';
+  g('log-notes-rows').innerHTML = '';
   openModal('log-overlay');
 }
 
@@ -1528,7 +1574,7 @@ function loadMoreLogs(caseId) {
       </div>
       <div class="log-card-body">${esc(log.description||'—')}</div>
       ${log.credentials ? `<div class="log-card-field"><strong>Credential:</strong> ${esc(log.credentials)}</div>` : ''}
-      ${log.notes ? `<div class="log-card-field"><strong>Notes:</strong> ${esc(log.notes)}</div>` : ''}
+      ${log.notes ? `<div class="log-card-field"><strong>Notes:</strong>${renderLogNotes(log.notes)}</div>` : ''}
     </div>
   `).join('');
   /* Hide load more button */
@@ -1548,7 +1594,7 @@ function saveLog() {
     time: g('log-time').value,
     description: desc,
     credentials: g('log-cred').value.trim(),
-    notes: g('log-notes').value.trim()
+    notes: (() => { const els = document.querySelectorAll('#log-notes-rows .step-input'); const a = []; els.forEach(el => { const v = el.value.trim(); if (v) a.push(v); }); return a.length ? a : []; })()
   });
   saveLocal(); push();
   closeModal('log-overlay');
@@ -1599,6 +1645,7 @@ function saveCase() {
     evidence: pImgs.length ? pImgs.map(e => ({url: e.full, name: e.name, isCdn: !!e.isCdn})) : imgRemoved ? [] : (ex ? ex.evidence || getEvidence(ex) : []),
     credentials: credentials.length ? credentials : (ex ? ex.credentials || [] : []),
     logs: ex ? ex.logs || [] : [],
+    steps: (() => { const els = document.querySelectorAll('#steps-rows .step-input'); const a = []; els.forEach(el => { const v = el.value.trim(); if (v) a.push(v); }); return a; })(),
   };
   if (editId) { const i = cases.findIndex(c => c.id === editId); if (i > -1) cases[i] = obj; editId = null; }
   else { obj.orderId = 0; cases.unshift(obj); ensureOrderIds(); }
@@ -1659,6 +1706,18 @@ function openDetail(id) {
         </div>
       </div>
     </div>
+
+    <!-- Steps to Reproduce (collapsible) -->
+    ${c.steps && c.steps.length ? `
+    <div class="dm-section">
+      <div class="dm-section-title cred-toggle" onclick="toggleCredSection(this)" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none">
+        <span>Steps to Reproduce</span>
+        <span class="cred-chevron" style="font-size:12px;transition:transform .2s">▶</span>
+      </div>
+      <div class="cred-collapse" style="max-height:0;overflow:hidden;transition:max-height .25s ease">
+        <ol style="margin:8px 0 0 20px;padding:0">${c.steps.map(s => `<li style="padding:3px 0;font-size:12px">${esc(s)}</li>`).join('')}</ol>
+      </div>
+    </div>` : ''}
 
     <!-- Test Steps -->
     <div class="dm-section">
@@ -1733,7 +1792,7 @@ function openDetail(id) {
               </div>
               <div class="log-card-body">${esc(log.description||'—')}</div>
               ${log.credentials ? `<div class="log-card-field"><strong>Credential:</strong> ${esc(log.credentials)}</div>` : ''}
-              ${log.notes ? `<div class="log-card-field"><strong>Notes:</strong> ${esc(log.notes)}</div>` : ''}
+              ${log.notes ? `<div class="log-card-field"><strong>Notes:</strong>${renderLogNotes(log.notes)}</div>` : ''}
             </div>
           `).join('')}
         </div>
