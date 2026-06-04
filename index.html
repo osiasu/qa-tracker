@@ -392,6 +392,7 @@ body.dark .copy-toast{background:#f0f0f0;color:#111}
   <button onclick="openSettings()" style="display:none;font-size:11px;padding:4px 10px" data-admin-only id="cloud-sync-btn">&#9881; Cloud sync</button>
   <button onclick="openImport()" style="font-size:11px;padding:4px 10px" data-admin-only>&#8593; Import CSV</button>
   <button onclick="smartExport()" style="font-size:11px;padding:4px 10px" id="export-btn">&#8595; Export CSV</button>
+  <button onclick="openExportHelp()" style="font-size:11px;padding:4px 6px;background:transparent;border-color:transparent;color:var(--text3);cursor:help" title="How export works">&#9432;</button>
   <button class="dm-btn" id="dm-btn" onclick="toggleDark()" title="Toggle dark mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
   <button onclick="doLogout()" style="font-size:11px;padding:4px 10px;color:var(--text2)">Sign out</button>
 </div>
@@ -516,6 +517,21 @@ create policy "public_read" on qa_tracker_data
     <div id="import-result" style="font-size:12px;color:var(--c-success);display:none;padding:8px 10px;background:var(--bg-success);border-radius:var(--r);border:1px solid #c0dd97"></div>
     <div id="import-error" style="font-size:12px;color:var(--c-danger);display:none;padding:8px 10px;background:var(--bg-danger);border-radius:var(--r);border:1px solid #f09595"></div>
     <div class="m-foot"><button onclick="closeModal('import-overlay')">Close</button></div>
+  </div>
+</div>
+
+<!-- CSV Export guide -->
+<div class="modal-bg" id="export-overlay">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="m-title">Export CSV</div>
+    <div class="m-sub">Export test cases to a CSV file for reporting, backup, or sharing with stakeholders.</div>
+    <div class="step-row"><span class="step-num">1</span>Apply filters (module, priority, status, etc.) to narrow down which cases to export — or leave all filters open to export everything.</div>
+    <div class="step-row"><span class="step-num">2</span>Click the <strong>Export CSV</strong> button in the toolbar. If filters are active, the button changes to <strong>Export filtered</strong> — it will only export the visible subset.</div>
+    <div class="step-row"><span class="step-num">3</span>The CSV file downloads automatically to your computer. It includes a summary section with pass rate statistics at the bottom.</div>
+    <div style="margin-top:14px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);font-size:12px">
+      <strong>CSV contents:</strong> Date, Time, Test ID, Name, Scenario, Steps, Module, Priority, Type, Environment, Input Data, Expected, Actual, Status, Notes, Evidence, Credentials, Logs
+    </div>
+    <div class="m-foot"><button onclick="closeModal('export-overlay')">Close</button></div>
   </div>
 </div>
 
@@ -2218,10 +2234,10 @@ function render() {
 function buildCSV(data) {
   const dt = u7dt();
   const header = ['# QA Test Results', '# Exported: '+dt+' (UTC+7)', '# Total rows: '+data.length, ''];
-  const cols = ['Date','Time (UTC+7)','Test ID','Name','Scenario','Module','Priority','Type','Environment','Input Data','Expected','Actual','Status','Notes','Evidence Count','Evidence','Credentials','Logs'];
+  const cols = ['Date','Time (UTC+7)','Test ID','Name','Scenario','Steps','Module','Priority','Type','Environment','Input Data','Expected','Actual','Status','Notes','Evidence Count','Evidence','Credentials','Logs'];
   const rows = data.map(c => {
     const evs = getEvidence(c);
-    return [fmt(c.date),c.time||'',c.testId||'',c.name,c.scenario||'',c.module,c.priority,c.type||'Positive',c.env||'Staging',c.input,c.expected,c.actual,c.status,c.notes,evs.length+'',JSON.stringify(evs.map(e=>({name:e.name,url:e.isCdn?e.full:''}))),JSON.stringify(c.credentials||[]),JSON.stringify(c.logs||[])].map(v => '"'+(v||'').replace(/"/g,'""')+'"').join(',');
+    return [fmt(c.date),c.time||'',c.testId||'',c.name,c.scenario||'',JSON.stringify(c.steps||[]),c.module,c.priority,c.type||'Positive',c.env||'Staging',c.input,c.expected,c.actual,c.status,c.notes,evs.length+'',JSON.stringify(evs.map(e=>({name:e.name,url:e.isCdn?e.full:''}))),JSON.stringify(c.credentials||[]),JSON.stringify(c.logs||[])].map(v => '"'+(v||'').replace(/"/g,'""')+'"').join(',');
   });
   const t = data.length, p = data.filter(c => c.status === 'Pass').length, it = data.filter(c => c.status === 'In Test').length;
   const summary = ['','"--- Summary ---"', `"Total","${t}"`,`"Pass","${p}"`,`"Fail","${t-p-it}"`,`"In Test","${it}"`,`"Pass rate","${t>0?Math.round(p/t*100):0}%"`,`"Exported at","${dt} UTC+7"`];
@@ -2234,10 +2250,19 @@ function triggerCSV(data, suffix) {
   a.download = 'qa_' + suffix + '_' + u7dt() + '.csv'; a.click();
 }
 function smartExport() {
+  if (selectedIds.size > 0) {
+    const selected = cases.filter(c => selectedIds.has(c.id));
+    triggerCSV(selected, 'selected');
+    return;
+  }
   const f = getF();
   /* Always export in the current sort order from getF().
      Use 'filtered' suffix only when active filters reduce the result set. */
   triggerCSV(f, (isFiltered() && f.length !== cases.length) ? 'filtered' : 'all');
+}
+function openExportHelp() {
+  g('export-overlay').classList.add('on');
+  document.body.style.overflow = 'hidden';
 }
 
 /* ══════════════ CSV IMPORT ══════════════ */
