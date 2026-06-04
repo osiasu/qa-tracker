@@ -26,6 +26,8 @@ html{font-size:14px}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh}
 .topbar{background:var(--bg);border-bottom:1px solid var(--bd);padding:0 1.5rem;display:flex;align-items:center;gap:10px;height:50px;position:sticky;top:0;z-index:200}
 .tb-title{font-size:14px;font-weight:600}.tb-sub{font-size:11px;color:var(--text3)}.tb-space{flex:1}
+.dataset-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg-info);color:var(--c-info);cursor:pointer;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis;transition:background .12s,border-color .12s;user-select:none}
+.dataset-badge:hover{filter:brightness(.95);border-color:var(--c-info)}
 .sync-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg2);color:var(--text2);white-space:nowrap}
 .sync-pill.ok{color:var(--c-success);border-color:#97c459;background:var(--bg-success)}
 .sync-pill.syncing{color:var(--c-warn);border-color:#ef9f27;background:var(--bg-warn)}
@@ -387,7 +389,7 @@ body.dark .copy-toast{background:#f0f0f0;color:#111}
   </span>
   <span class="sync-pill" id="sync-pill"><span class="sync-dot"></span><span id="sync-txt">Local only</span></span>
   <button class="refresh-btn" id="refresh-btn" onclick="manualRefresh()" title="Refresh data from cloud">↻</button>
-  <button onclick="switchDataset()" id="switch-dataset-btn" style="font-size:11px;padding:4px 10px;display:none" title="Switch to a different dataset"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h.34"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M14 2H6a2 2 0 0 0-2 2v4"/><path d="M14 2l6 6v12a2 2 0 0 1-2 2h-4"/></svg> Switch data</button>
+  <span onclick="switchDataset()" id="switch-dataset-btn" class="dataset-badge" style="display:none" title="Switch to a different dataset">&#128451; Switch data</span>
   <span class="cdn-pill off" id="cdn-pill" onclick="openCdnModal()" title="Cloudinary image storage">&#9729; Cloudinary</span>
   <button onclick="openSettings()" style="display:none;font-size:11px;padding:4px 10px" data-admin-only id="cloud-sync-btn">&#9881; Cloud sync</button>
   <button onclick="openImport()" style="font-size:11px;padding:4px 10px" data-admin-only>&#8593; Import CSV</button>
@@ -669,6 +671,7 @@ create policy "public_read" on qa_tracker_data
     <div style="display:flex;flex-direction:column;gap:3px;min-width:120px"><span class="lbl">Status</span><select id="fsf" onchange="resetPage();render()"><option value="All">All statuses</option><option>Pass</option><option>Fail</option><option value="In Test">In Test</option></select></div>
     <div style="display:flex;flex-direction:column;gap:3px;min-width:110px"><span class="lbl">Type</span><select id="ftf" onchange="resetPage();render()"><option value="All">All types</option><option>Positive</option><option>Negative</option></select></div>
     <div style="display:flex;flex-direction:column;gap:3px;min-width:118px"><span class="lbl">Env</span><select id="fenv-f" onchange="resetPage();render()"><option value="All">All envs</option><option>Staging</option><option>Production</option></select></div>
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:130px"><span class="lbl">Module</span><select id="fmodule" onchange="resetPage();render()"><option value="All">All modules</option></select></div>
     <div style="display:flex;flex-direction:column;gap:3px;min-width:140px"><span class="lbl click" onclick="opk('dFrom')">From <span class="tz">UTC+7</span></span><input type="date" id="dFrom" onchange="resetPage();render()"></div>
     <div style="display:flex;flex-direction:column;gap:3px;min-width:140px"><span class="lbl click" onclick="opk('dTo')">To <span class="tz">UTC+7</span></span><input type="date" id="dTo" onchange="resetPage();render()"></div>
     <div style="display:flex;flex-direction:column;gap:3px;min-width:145px"><span class="lbl">Sort by</span><select id="fsort" onchange="resetPage();render()"><option value="order-desc">Order Desc</option><option value="order-asc" selected>Order Asc</option><option value="date-desc">Date Newest</option><option value="date-asc">Date Oldest</option></select></div>
@@ -877,7 +880,7 @@ function doLogout() {
   g('login-err').style.display = 'none';
   g('view-chooser').classList.remove('on');
   g('login-screen').style.display = 'flex';
-  const btn = g('switch-dataset-btn'); if (btn) btn.style.display = 'none';
+  const badge = g('switch-dataset-btn'); if (badge) { badge.style.display = 'none'; badge.textContent = '\u{1F4C1} Switch data'; }
   const dark = document.body.classList.contains('dark');
   document.body.className = dark ? 'dark' : '';
   document.body.style.overflow = '';
@@ -983,12 +986,14 @@ async function selectDataRow(rowId) {
     syncTimer = setInterval(() => pull(true), 60000);
     syncBadge('ok', 'Cloud sync ✓');
     updateCdnPill();
-    /* Show the Switch Data button now that a dataset is loaded */
-    const btn = g('switch-dataset-btn');
-    if (btn) btn.style.display = '';
-    /* Label it with the selected dataset name */
+    /* Show dataset badge now that a dataset is loaded */
+    const badge = g('switch-dataset-btn');
+    if (badge) badge.style.display = 'inline-flex';
     const row = vcDataRows.find(r => r.id === rowId);
-    if (btn && row) btn.title = `Current: ${row.name} — click to switch`;
+    if (badge && row) {
+      badge.textContent = '\u{1F4C1} ' + row.name + ' \u25BE';
+      badge.title = `${row.name} — ${row.description || ''} — click to switch`;
+    }
   } catch(e) {
     syncBadge('err', 'Load failed');
     console.error(e);
@@ -2017,20 +2022,21 @@ function onDrop(e, targetId) {
 function liveSearch() { resetPage(); render(); }
 function clearF() {
   ['sq','dFrom','dTo'].forEach(id => g(id).value = '');
-  g('fsf').value = 'All'; g('ftf').value = 'All'; g('fenv-f').value = 'All'; g('fsort').value = 'order-asc';
+  g('fsf').value = 'All'; g('ftf').value = 'All'; g('fenv-f').value = 'All'; g('fmodule').value = 'All'; g('fsort').value = 'order-asc';
   g('show-internal').checked = false;
   resetPage(); render();
 }
 function isFiltered() {
-  return g('dFrom').value || g('dTo').value || g('fsf').value !== 'All' || g('ftf').value !== 'All' || g('fenv-f').value !== 'All' || g('sq').value;
+  return g('dFrom').value || g('dTo').value || g('fsf').value !== 'All' || g('ftf').value !== 'All' || g('fenv-f').value !== 'All' || g('fmodule').value !== 'All' || g('sq').value;
 }
 function getF() {
   const q = g('sq').value.toLowerCase(), fs = g('fsf').value, ft = g('ftf').value,
-    fe = g('fenv-f').value, fd = g('dFrom').value, td = g('dTo').value, sort = g('fsort').value;
+    fe = g('fenv-f').value, fm = g('fmodule').value, fd = g('dFrom').value, td = g('dTo').value, sort = g('fsort').value;
   let res = cases.filter(c => {
     if (fs !== 'All' && c.status !== fs) return false;
     if (ft !== 'All' && (c.type||'Positive') !== ft) return false;
     if (fe !== 'All' && (c.env||'Staging') !== fe) return false;
+    if (fm !== 'All' && (c.module||'') !== fm) return false;
     if (fd && c.date < fd) return false;
     if (td && c.date > td) return false;
     if (q && !((c.testId||'')+(c.name||'')+(c.scenario||'')+(c.module||'')+c.input+c.expected+c.actual+c.notes).toLowerCase().includes(q)) return false;
@@ -2138,6 +2144,12 @@ function initResizable() {
 }
 
 function render() {
+  /* Populate module filter with distinct values from data */
+  const modSel = g('fmodule');
+  const curMod = modSel.value;
+  const mods = [...new Set(cases.map(c => c.module).filter(Boolean))].sort();
+  modSel.innerHTML = '<option value="All">All modules</option>' + mods.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+  modSel.value = mods.includes(curMod) ? curMod : 'All';
   const f = getF(), total = cases.length, fTotal = f.length;
   const filtered = isFiltered() && fTotal !== total;
   const cnt = (arr, pred) => arr.filter(pred).length;
