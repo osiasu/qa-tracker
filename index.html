@@ -146,6 +146,9 @@ tr.drag-over-bot td{border-bottom:2px solid var(--c-blue)!important}
 .bulk-bar{display:none;align-items:center;gap:8px;padding:8px 12px;background:#e8f2fd;border:1px solid #85b7eb;border-radius:var(--r);margin-bottom:8px;flex-wrap:wrap}
 .bulk-bar.on{display:flex}
 .bulk-count{font-size:12px;font-weight:600;color:var(--c-info)}
+.pin-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;border:1px solid transparent;background:transparent;cursor:pointer;padding:0;flex-shrink:0;transition:color .12s,border-color .12s,background .12s;vertical-align:middle;color:var(--text3);line-height:0}
+.pin-btn:hover{background:var(--bg-info);border-color:var(--c-info);color:var(--c-info)}
+.pin-btn.pinned{color:var(--c-info)}
 /* Modals — centered, backdrop does NOT close modal on click */
 .modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:2rem;overflow-y:auto}
 .modal-bg.on{display:flex}
@@ -456,6 +459,7 @@ create policy "public_read" on qa_tracker_data
     <div class="be-row"><input type="checkbox" id="be-chk-env" onchange="toggleBe('env')"><label class="be-lbl" for="be-chk-env">Environment</label><div class="be-val" id="be-val-env"><select id="be-env"><option value="Staging">Staging</option><option value="Production">Production</option></select></div></div>
     <div class="be-row"><input type="checkbox" id="be-chk-status" onchange="toggleBe('status')"><label class="be-lbl" for="be-chk-status">Status</label><div class="be-val" id="be-val-status"><select id="be-status"><option value="Pass">Pass</option><option value="Fail">Fail</option><option value="In Test">In Test</option></select></div></div>
     <div class="be-row"><input type="checkbox" id="be-chk-notes" onchange="toggleBe('notes')"><label class="be-lbl" for="be-chk-notes">Notes</label><div class="be-val" id="be-val-notes"><input id="be-notes" placeholder="Notes to apply to all selected"></div></div>
+    <div class="be-row"><input type="checkbox" id="be-chk-pinned" onchange="toggleBe('pinned')"><label class="be-lbl" for="be-chk-pinned">Pin</label><div class="be-val" id="be-val-pinned"><select id="be-pinned"><option value="true">Pin</option><option value="false">Unpin</option></select></div></div>
     <div class="m-foot"><button onclick="closeModal('be-overlay')">Cancel</button><button class="bp" onclick="applyBulkEdit()">Apply to selected</button></div>
   </div>
 </div>
@@ -1665,6 +1669,7 @@ function saveCase() {
     imgName: pImgs.length ? pImgs[0].name : imgRemoved ? null : (ex ? ex.imgName||null : null),
     evidence: pImgs.length ? pImgs.map(e => ({url: e.full, name: e.name, isCdn: !!e.isCdn})) : imgRemoved ? [] : (ex ? ex.evidence || getEvidence(ex) : []),
     credentials: credentials.length ? credentials : (ex ? ex.credentials || [] : []),
+    pinned: ex ? !!ex.pinned : false,
     logs: ex ? ex.logs || [] : [],
     steps: (() => { const els = document.querySelectorAll('#steps-rows .step-input'); const a = []; els.forEach(el => { const v = el.value.trim(); if (v) a.push(v); }); return a; })(),
   };
@@ -1681,6 +1686,12 @@ function deleteCase(id) {
 function clearAll() {
   if (!cases.length) return;
   if (confirm('Delete ALL test cases? This cannot be undone.')) { cases = []; selectedIds.clear(); clearForm(); saveLocal(); push(); render(); }
+}
+function togglePin(id) {
+  const c = cases.find(x => x.id === id);
+  if (!c) return;
+  c.pinned = !c.pinned;
+  saveLocal(); push(); render();
 }
 
 /* ══════════════ DETAIL VIEW (receipt-style) ══════════════ */
@@ -1721,6 +1732,7 @@ function openDetail(id) {
       </div>
       <div class="dm-item-row" style="padding-top:8px;border-top:1px solid var(--bd);margin-top:4px">
         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          ${c.pinned ? '<span class="badge" style="background:var(--bg-info);color:var(--c-info);border-color:#85b7eb;font-size:11px">📌 Pinned</span>' : ''}
           <span class="badge ${typCls}" style="font-size:11px">${typeLabel}</span>
           <span class="badge ${envCls}" style="font-size:11px">${esc(c.env||'Staging')}</span>
           <span style="font-size:11px;color:var(--text3)">${fmt(c.date)}${c.time ? ' · ' + c.time + ' UTC+7' : ''}</span>
@@ -1911,7 +1923,7 @@ function bulkDelete() {
 function openBulkEdit() {
   if (!selectedIds.size) return;
   g('be-count-title').textContent = selectedIds.size + ' case' + (selectedIds.size > 1 ? 's' : '');
-  ['scenario','module','priority','type','env','status','notes'].forEach(f => { g('be-chk-'+f).checked = false; g('be-val-'+f).classList.remove('on'); });
+  ['scenario','module','priority','type','env','status','notes','pinned'].forEach(f => { g('be-chk-'+f).checked = false; g('be-val-'+f).classList.remove('on'); });
   openModal('be-overlay');
 }
 function toggleBe(f) { g('be-val-'+f).classList.toggle('on', g('be-chk-'+f).checked); }
@@ -1924,6 +1936,7 @@ function applyBulkEdit() {
   if (g('be-chk-env').checked) updates.env = g('be-env').value;
   if (g('be-chk-status').checked) updates.status = g('be-status').value;
   if (g('be-chk-notes').checked) updates.notes = g('be-notes').value;
+  if (g('be-chk-pinned').checked) updates.pinned = g('be-pinned').value === 'true';
   if (!Object.keys(updates).length) { alert('Check at least one field to update.'); return; }
   cases = cases.map(c => selectedIds.has(c.id) ? {...c, ...updates} : c);
   saveLocal(); push(); closeModal('be-overlay'); render();
@@ -2039,11 +2052,13 @@ function getF() {
     if (fm !== 'All' && (c.module||'') !== fm) return false;
     if (fd && c.date < fd) return false;
     if (td && c.date > td) return false;
-    if (q && !((c.testId||'')+(c.name||'')+(c.scenario||'')+(c.module||'')+c.input+c.expected+c.actual+c.notes).toLowerCase().includes(q)) return false;
+    if (q && !((c.testId||'')+(c.name||'')+(c.scenario||'')+(c.module||'')+c.input+c.expected+c.actual+c.notes+JSON.stringify(c.credentials||[])+(c.steps||[]).join(' ')+JSON.stringify(c.logs||[])).toLowerCase().includes(q)) return false;
     return true;
   });
   if (!reorderMode) {
     res.sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
       const oa = a.orderId || 9999999, ob = b.orderId || 9999999;
       const da = (a.date||'')+(a.time||''), db = (b.date||'')+(b.time||'');
       if (sort === 'order-asc') {
@@ -2113,7 +2128,7 @@ function renderPagination(filteredLen) {
 /* ══════════════ RENDER ══════════════ */
 function buildHead(allChecked) {
   g('thead').innerHTML = `<tr>
-    <th style="width:38px;text-align:center">${(reorderMode || currentRole==='view') ? '' : `<input type="checkbox" id="select-all" ${allChecked?'checked':''} onchange="toggleSelectAll(this)" title="Select all visible">`}</th>
+    <th style="width:60px;text-align:center">${(reorderMode || currentRole==='view') ? '' : `<input type="checkbox" id="select-all" ${allChecked?'checked':''} onchange="toggleSelectAll(this)" title="Select all visible">`}</th>
     <th data-col="datetime" style="width:90px;cursor:default">Date &amp; time<div class="resize-handle"></div></th>
     <th data-col="testid" style="width:70px">Test ID<div class="resize-handle"></div></th>
     <th data-col="name" style="width:30%;min-width:160px">Name<div class="resize-handle"></div></th>
@@ -2204,11 +2219,14 @@ function render() {
     const thumb = evs.length ? `<span class="thumb-wrap"><img class="thumb" src="${evidenceThumbSrc(evs[0])}" onclick="openPPev('${c.id}',0)" title="View evidence (${evs.length})">${evs.length > 1 ? `<span class="thumb-count">${evs.length}</span>` : ''}</span>` : `<span style="color:var(--text3);font-size:11px">—</span>`;
     const trClass = isE ? 'hl' : isSel ? 'selected' : '';
     const dragAttrs = reorderMode ? `draggable="true" ondragstart="onDragStart(event,'${c.id}')" ondragend="onDragEnd(event)" ondragover="onDragOver(event,'${c.id}')" ondrop="onDrop(event,'${c.id}')"` : '';
+    const pinIcon = c.pinned
+      ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v5"/><path d="M6 7h12l-1.5 9H7.5z"/><path d="M8 16v4"/><path d="M12 20v-4"/></svg>'
+      : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v5"/><path d="M6 7h12l-1.5 9H7.5z"/><path d="M8 16v4"/><path d="M12 20v-4"/></svg>';
     const firstCell = reorderMode
       ? `<td style="text-align:center;overflow:visible;max-width:none"><span class="drag-handle" title="Drag to reorder">&#9776;</span></td>`
       : currentRole === 'view'
-        ? `<td></td>`
-        : `<td style="text-align:center;overflow:visible;max-width:none"><input type="checkbox" class="row-cb" data-id="${c.id}" ${isSel?'checked':''} onchange="toggleSelect('${c.id}')"></td>`;
+        ? `<td style="text-align:center;overflow:visible;max-width:none"><span class="pin-btn ${c.pinned?'pinned':''}" style="cursor:default">${pinIcon}</span></td>`
+        : `<td style="text-align:center;overflow:visible;max-width:none"><input type="checkbox" class="row-cb" data-id="${c.id}" ${isSel?'checked':''} onchange="toggleSelect('${c.id}')"><button class="pin-btn ${c.pinned?'pinned':''}" onclick="togglePin('${c.id}')" title="${c.pinned?'Unpin this case':'Pin this case'}">${pinIcon}</button></td>`;
     const showInternal = g('show-internal') && g('show-internal').checked;
     /* orderId badge: shown only when "Show orderID" is checked */
     const orderBadge = showInternal
