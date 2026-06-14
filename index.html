@@ -1327,16 +1327,13 @@ async function handleImg(inp) {
   const slots = Math.max(0, MAX_EVIDENCE - pImgs.length);
   if (!slots) { g('ulbl').textContent = 'Max ' + MAX_EVIDENCE + ' images'; return; }
   const useFiles = files.slice(0, slots);
-  g('ulbl').textContent = 'Uploading…';
+  g('ulbl').textContent = 'Loading preview…';
   for (const file of useFiles) {
-    let result = null;
-    if (cdnCloud && cdnPreset) {
-      const cdn = await uploadToCdn(file);
-      result = cdn ? {full: cdn.url, name: cdn.name, isCdn: true} : await storeImgLocal(file);
-    } else {
-      result = await storeImgLocal(file);
+    const result = await storeImgLocal(file);
+    if (result) {
+      if (cdnCloud && cdnPreset) { result.file = file; result.pending = true; }
+      pImgs.push(result);
     }
-    if (result) pImgs.push(result);
   }
   imgRemoved = false;
   renderEvidencePreview();
@@ -1355,7 +1352,7 @@ function renderEvidencePreview() {
   row.innerHTML = pImgs.map((ev, idx) => `
     <div class="evi-chip">
       <img src="${evidenceThumbSrc(ev)}" title="${esc(ev.name)}">
-      <span>${esc(ev.name)}${ev.isCdn ? ' (Cloudinary)' : ' (local)'}</span>
+      <span>${esc(ev.name)}${ev.isCdn ? ' (Cloudinary)' : ev.pending ? ' (pending upload)' : ' (local)'}</span>
       <button type="button" onclick="removeImg(${idx})" title="Remove image">✕</button>
     </div>
   `).join('');
@@ -1642,10 +1639,23 @@ function buildTCList() {
   const dl = g('tc-list'); dl.innerHTML = '';
   for (let i = 1; i <= 1000; i++) { const o = document.createElement('option'); o.value = 'TC' + String(i).padStart(4,'0'); dl.appendChild(o); }
 }
-function saveCase() {
+async function saveCase() {
   const tid = g('ftid').value.trim(), name = g('fn').value.trim();
   if (!tid) { g('ftid').focus(); return; }
   if (!name) { g('fn').focus(); return; }
+  if (pImgs.some(e => e.pending)) {
+    const btn = g('btn-save');
+    btn.disabled = true; btn.textContent = 'Uploading…';
+    for (let i = 0; i < pImgs.length; i++) {
+      if (pImgs[i].pending && pImgs[i].file) {
+        const cdn = await uploadToCdn(pImgs[i].file);
+        pImgs[i] = cdn
+          ? {full: cdn.url, name: cdn.name, isCdn: true}
+          : {full: pImgs[i].full, name: pImgs[i].name, isCdn: false};
+      }
+    }
+    btn.disabled = false;
+  }
   const ex = editId ? cases.find(c => c.id === editId) : null;
   const n = u7();
   /* Collect credentials from form */
